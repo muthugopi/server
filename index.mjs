@@ -1,100 +1,145 @@
-import express from "express";
+import exp from "express";
 import morgan from "morgan";
-import fs from 'fs'
-const app = express();
+import cors from "cors";
+
+const app = exp();
+app.use(cors());
+app.use(exp.json())
+app.use(morgan('dev'));
 
 const PORT = 3000;
-const users = [
-    { id: 1, user_name: "muthu" },
-    { id: 2, user_name: "gopi" },
-    { id: 3, user_name: "emirates" },
-    { id: 4, user_name: "emix" }
 
+const users = [
+    { id: 1, name: "muthu" },
+    { id: 2, name: "gopi" },
+    { id: 3, name: 'emirates' },
+    { id: 4, name: 'muthugopi' }
 ];
 
 const products = [
-    {id:1, p_name:"mobile"},
-    {id:2, p_name:"headphones"},
-    {id:3, p_name:"laptop"},
-    {id:4, p_name:"keyboard"}
+    { id: 1, name: 'laptop' },
+    { id: 2, name: 'headphone' },
+    { id: 3, name: 'earbuds' }
 ];
 
-const books = [
-  { id: 1, title: "Harry Potter", author: "J.K. Rowling", available: true },
-  { id: 2, title: "Atomic Habits", author: "James Clear", available: false },
-  { id: 3, title: "Clean Code", author: "Robert C. Martin", available: true }
+const s_names = [
+    { id: 1, s_name: 'muthugopi' },
+    { id: 2, s_name: 'emirates' },
+    { id: 3, s_name: 'ayaan' }
 ];
 
-app.use(morgan('dev'));
-app.use(express.static('public'));
 
-app.get('/api/books', (req, res)=>{
-    res.send(books);
+
+app.get('/', (req, res) => {
+    res.status(200).send({ msg: 'your enter the landing page !!' })
 });
 
-app.get('/api/books/:id', (req, res)=> {
-    const id = parseInt(req.params.id);
-    const book = books.find(b => b.id === id) 
-    if (book) {
-        if (!book.available) {
-            return res.send({msg:'books is not available'})
-        }
-        console.log(book);
-        return res.send(book);
-    }
-     res.status(404).send({msg:'invalid request'})
-});
-
-
-app.get('/api/products', (req, res)=> {
-    res.send(products);
-});
-
-app.get('/api/products/:id', (req, res)=> {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-        return res.status(500).send({msg:"bad request. invalid prodect"});
-    }
-    const product = products.find(p => p.id === id );
-    if (product) {
-        console.log(product);
-        return res.send(product);
-    }
-    res.send({msg:'invalid product'})
+app.get('/home', (req, res) => {
+    res.status(200).redirect('/')
 });
 
 app.get('/api/users', (req, res) => {
-    res.send(users)
 
+    const { query: { filter, value } } = req;
+    console.log(filter, value);
+    if (filter && value) {
+        return res.status(200).send(users.filter((user) => user[filter].toLowerCase().includes(value)))
+    }
+    res.status(200).send(users);
+})
+
+app.get('/api/products', (req, res) => {
+    const { query: { filter, value } } = req;
+    if (filter, value) {
+        return res.status(200).send(products.filter(prop => prop[filter].toString().includes(value)));
+    }
+    res.send(products);
 });
 
-app.get('/api/users/:id', (req, res) => {
-    // console.log(req.params);
+app.get('/api/student_names', (req, res) => {
+    const { query: { filter, value } } = req;
+    if (filter && value) {
+        return res.status(200).send(s_names.filter(s_name => s_name[filter].toString().includes(value)));
+    } else if (filter || value) {
+        return res.status(404).send({ msg: "bad request" });
+    }
+    return res.status(200).send(s_names);
+});
+
+app.get('/api/products/:id', (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
-        return res.status(400).send({ msg: "bad request invalid id" });
+        return res.send({ msg: 'invalid product id' });
     }
-    const user = users.find((u) => u.id === id);
+    else {
+        const product = products.find(prop => prop.id === id);
+        if (product)
+            return res.send(product);
+        else
+            return res.send({ msg: 'product not available' })
+    }
+})
+
+app.get('/api/users/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const user = users.find(user => user.id === id);
+
     if (user) {
-        res.send(user);
-        return console.log(user);
+        res.status(200).send(user);
+    } else {
+        res.status(404).send({ msg: 'User Not Found !!' });
     }
-    res.status(404).send({ msg: "user not found" });
 });
 
-app.get('/', (req, res) => {
-    res.send({ msg: "this is a message" });
+app.post('/api/user', (req, res) => {
+    const { body } = req;
+    const exist = users.find(user => user.name == body.name);
+    if (exist) {
+        return res.status(409).send({ msg: "user alread exist!!" });
+    }
+    const newUser = { id: users[users.length - 1].id + 1, ...body };
+    users.push(newUser);
+    return res.status(201).send(newUser)
 });
 
-app.get('/home', (req, res)=> {
-    res.redirect('/');
+app.put('/api/user/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+        return res.status(400).send("Bad URL!");
+    }
+
+    const userIndex = users.findIndex(user => user.id === id);
+    if (userIndex === -1) {
+        return res.status(404).send("User not found!");
+    }
+
+    const { body } = req;
+    users[userIndex] = { id: id, ...body };
+
+    res.status(200).send("Updated successfully!");
 });
 
+app.patch('/api/user/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+        return res.status(400).send("Bad URL!");
+    }
 
-app.use((req, res)=> {
-    res.status(404).send('invalid url')
-});
+    const userIndex = users.findIndex(user => user.id === id);
+    if (userIndex === -1) {
+        return res.status(404).send("User not found!");
+    }
+
+    const { body } = req;
+    users[userIndex] = {...users[userIndex], ...body}
+    console.log(body);
+})
+
+app.use((req, res) => {
+    res.send({ msg: "invalid URL Bruhh" })
+})
+
 
 app.listen(PORT, () => {
-    console.log(`app is running on port ${PORT}`);
-});
+    console.log(`server runing at port ${PORT}`)
+})
