@@ -28,6 +28,19 @@ const s_names = [
     { id: 3, s_name: 'ayaan' }
 ];
 
+const getUserById = (req, res, next) => {
+    const id =parseInt( req.params.id);
+    if (isNaN(id)) {
+        res.status(400).send('bad request !');
+    }
+    const userIndex = users.findIndex(u => u.id == id);
+    if ( userIndex == -1) {
+        return res.status(404).send('user not found !');
+    }
+    req.userIndex = userIndex;
+    next();
+
+}
 
 
 app.get('/', (req, res) => {
@@ -103,16 +116,7 @@ app.post('/api/user', (req, res) => {
 });
 
 app.put('/api/user/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-        return res.status(400).send("Bad URL!");
-    }
-
-    const userIndex = users.findIndex(user => user.id === id);
-    if (userIndex === -1) {
-        return res.status(404).send("User not found!");
-    }
-
+   const userIndex = req.userIndex;
     const { body } = req;
     users[userIndex] = { id: id, ...body };
 
@@ -133,6 +137,13 @@ app.patch('/api/user/:id', (req, res) => {
     const { body } = req;
     users[userIndex] = {...users[userIndex], ...body}
     console.log(body);
+});
+
+app.delete('/api/users/:id', getUserById, (req, res) => {
+    const userIndex = req.userIndex;
+    users.splice(userIndex, 1);
+    console.log(`user : ${users[userIndex]} was deleted`)
+    res.status(200);
 })
 
 app.use((req, res) => {
