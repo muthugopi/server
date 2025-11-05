@@ -29,12 +29,12 @@ const s_names = [
 ];
 
 const getUserById = (req, res, next) => {
-    const id =parseInt( req.params.id);
+    const id = parseInt(req.params.id);
     if (isNaN(id)) {
         res.status(400).send('bad request !');
     }
     const userIndex = users.findIndex(u => u.id == id);
-    if ( userIndex == -1) {
+    if (userIndex == -1) {
         return res.status(404).send('user not found !');
     }
     req.userIndex = userIndex;
@@ -104,7 +104,7 @@ app.get('/api/users/:id', (req, res) => {
     }
 });
 
-app.post('/api/user', (req, res) => {
+app.post('/api/user', /*getUserById,*/ (req, res) => {
     const { body } = req;
     const exist = users.find(user => user.name == body.name);
     if (exist) {
@@ -115,34 +115,27 @@ app.post('/api/user', (req, res) => {
     return res.status(201).send(newUser)
 });
 
-app.put('/api/user/:id', (req, res) => {
-   const userIndex = req.userIndex;
+app.put('/api/user/:id', getUserById, (req, res) => {
+    const userIndex = req.userIndex;
     const { body } = req;
     users[userIndex] = { id: id, ...body };
 
     res.status(200).send("Updated successfully!");
 });
 
-app.patch('/api/user/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-        return res.status(400).send("Bad URL!");
-    }
-
-    const userIndex = users.findIndex(user => user.id === id);
-    if (userIndex === -1) {
-        return res.status(404).send("User not found!");
-    }
+app.patch('/api/user/:id', getUserById, (req, res) => {
+    const userIndex = req.userIndex;
 
     const { body } = req;
-    users[userIndex] = {...users[userIndex], ...body}
+    users[userIndex] = { ...users[userIndex], ...body }
     console.log(body);
+    res.status(200).send({msg:"user upadated successfully", updatedUser : user[userIndex]});
 });
 
 app.delete('/api/users/:id', getUserById, (req, res) => {
     const userIndex = req.userIndex;
     users.splice(userIndex, 1);
-    console.log(`user : ${users[userIndex]} was deleted`)
+    console.log(`user was deleted successfully !! `)
     res.status(200);
 })
 
