@@ -1,149 +1,216 @@
 import exp from "express";
 import morgan from "morgan";
 import cors from "cors";
+import fs from "fs";
 
 const app = exp();
 app.use(cors());
-app.use(exp.json())
-app.use(morgan('dev'));
+app.use(exp.json());
+app.use(morgan("dev"));
+
+// log
+app.use((req, res, next) => {
+    const start = Date.now();
+    res.on("finish", () => {
+        const duration = Date.now() - start;
+        console.log(`⏱️ ${req.method} ${req.originalUrl} - ${duration}ms`);
+    });
+    next();
+});
 
 const PORT = 3000;
 
-const users = [
+// data
+let users = [
     { id: 1, name: "muthu" },
     { id: 2, name: "gopi" },
-    { id: 3, name: 'emirates' },
-    { id: 4, name: 'muthugopi' }
+    { id: 3, name: "emirates" },
+    { id: 4, name: "muthugopi" }
 ];
 
-const products = [
-    { id: 1, name: 'laptop' },
-    { id: 2, name: 'headphone' },
-    { id: 3, name: 'earbuds' }
+let products = [
+    { id: 1, name: "laptop" },
+    { id: 2, name: "headphone" },
+    { id: 3, name: "earbuds" }
 ];
 
-const s_names = [
-    { id: 1, s_name: 'muthugopi' },
-    { id: 2, s_name: 'emirates' },
-    { id: 3, s_name: 'ayaan' }
+let s_names = [
+    { id: 1, s_name: "muthugopi" },
+    { id: 2, s_name: "emirates" },
+    { id: 3, s_name: "ayaan" }
 ];
 
+// 
+const saveData = (filename, data) => {
+    fs.writeFileSync(filename, JSON.stringify(data, null, 2));
+};
+
+//Middleware-Get user by ID
 const getUserById = (req, res, next) => {
     const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-        res.status(400).send('bad request !');
-    }
-    const userIndex = users.findIndex(u => u.id == id);
-    if (userIndex == -1) {
-        return res.status(404).send('user not found !');
-    }
+    if (isNaN(id)) return res.status(400).send({ msg: "Invalid ID!" });
+
+    const userIndex = users.findIndex((u) => u.id === id);
+    if (userIndex === -1) return res.status(404).send({ msg: "User not found!" });
+
     req.userIndex = userIndex;
+    req.userId = id;
     next();
+};
 
-}
+//  authentication middleware
+const auth = (req, res, next) => {
+    const token = req.headers.authorization;
+    if (token === "Bearer seithur-secret") next();
+    else res.status(401).send({ msg: "Unauthorized Access" });
+};
 
-
-app.get('/', (req, res) => {
-    res.status(200).send({ msg: 'your enter the landing page !!' })
+// root
+app.get("/", (req, res) => {
+    res.status(200).send({
+        message: "Welcome to Seithur API 🚀",
+        available_routes: {
+            users: "/api/users",
+            products: "/api/products",
+            students: "/api/student_names",
+            secret: "/api/secret (Protected)"
+        },
+        developer: "Muthugopi",
+        version: "1.1.0"
+    });
 });
 
-app.get('/home', (req, res) => {
-    res.status(200).redirect('/')
-});
+// Home=
+app.get("/home", (req, res) => res.redirect("/"));
 
-app.get('/api/users', (req, res) => {
 
-    const { query: { filter, value } } = req;
-    console.log(filter, value);
+app.get("/api/users", (req, res) => {
+    const { filter, value, sortBy = "id", order = "asc", page = 1, limit = 5 } = req.query;
+    let result = [...users];
+
     if (filter && value) {
-        return res.status(200).send(users.filter((user) => user[filter].toLowerCase().includes(value)))
+        result = result.filter((user) =>
+            user[filter]?.toString().toLowerCase().includes(value.toLowerCase())
+        );
     }
-    res.status(200).send(users);
-})
 
-app.get('/api/products', (req, res) => {
-    const { query: { filter, value } } = req;
-    if (filter, value) {
-        return res.status(200).send(products.filter(prop => prop[filter].toString().includes(value)));
-    }
-    res.send(products);
+    // Sort
+    result.sort((a, b) => {
+        if (order === "desc") return a[sortBy] > b[sortBy] ? -1 : 1;
+        return a[sortBy] > b[sortBy] ? 1 : -1;
+    });
+
+    const start = (page - 1) * limit;
+    const paginated = result.slice(start, start + parseInt(limit));
+
+    res.status(200).send({
+        total: result.length,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        data: paginated
+    });
 });
 
-app.get('/api/student_names', (req, res) => {
-    const { query: { filter, value } } = req;
+
+app.get("/api/products", (req, res) => {
+    const { filter, value } = req.query;
+    let result = [...products];
     if (filter && value) {
-        return res.status(200).send(s_names.filter(s_name => s_name[filter].toString().includes(value)));
+        result = result.filter((p) => p[filter]?.toString().toLowerCase().includes(value.toLowerCase()));
+    }
+    res.status(200).send(result);
+});
+
+//  Get student names
+app.get("/api/student_names", (req, res) => {
+    const { filter, value } = req.query;
+    if (filter && value) {
+        return res
+            .status(200)
+            .send(s_names.filter((s) => s[filter]?.toString().toLowerCase().includes(value.toLowerCase())));
     } else if (filter || value) {
-        return res.status(404).send({ msg: "bad request" });
+        return res.status(400).send({ msg: "Bad request" });
     }
     return res.status(200).send(s_names);
 });
 
-app.get('/api/products/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-        return res.send({ msg: 'invalid product id' });
-    }
-    else {
-        const product = products.find(prop => prop.id === id);
-        if (product)
-            return res.send(product);
-        else
-            return res.send({ msg: 'product not available' })
-    }
-})
 
-app.get('/api/users/:id', (req, res) => {
+app.get("/api/products/:id", (req, res) => {
     const id = parseInt(req.params.id);
-    const user = users.find(user => user.id === id);
+    if (isNaN(id)) return res.status(400).send({ msg: "Invalid product ID" });
 
-    if (user) {
-        res.status(200).send(user);
-    } else {
-        res.status(404).send({ msg: 'User Not Found !!' });
-    }
+    const product = products.find((p) => p.id === id);
+    if (!product) return res.status(404).send({ msg: "Product not available" });
+
+    res.status(200).send(product);
 });
 
-app.post('/api/user', /*getUserById,*/ (req, res) => {
+
+app.get("/api/users/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+    const user = users.find((u) => u.id === id);
+    if (!user) return res.status(404).send({ msg: "User Not Found!" });
+    res.status(200).send(user);
+});
+
+// Add user
+app.post("/api/user", (req, res) => {
     const { body } = req;
-    const exist = users.find(user => user.name == body.name);
-    if (exist) {
-        return res.status(409).send({ msg: "user alread exist!!" });
-    }
+    const exist = users.find((u) => u.name === body.name);
+    if (exist) return res.status(409).send({ msg: "User already exists!" });
+
     const newUser = { id: users[users.length - 1].id + 1, ...body };
     users.push(newUser);
-    return res.status(201).send(newUser)
+    saveData("users.json", users); // 💾 Save automatically
+
+    res.status(201).send(newUser);
 });
 
-app.put('/api/user/:id', getUserById, (req, res) => {
-    const userIndex = req.userIndex;
+// Update full user
+app.put("/api/user/:id", getUserById, (req, res) => {
     const { body } = req;
-    users[userIndex] = { id: id, ...body };
-
-    res.status(200).send("Updated successfully!");
+    users[req.userIndex] = { id: req.userId, ...body };
+    saveData("users.json", users);
+    res.status(200).send({ msg: "User updated successfully!" });
 });
 
-app.patch('/api/user/:id', getUserById, (req, res) => {
-    const userIndex = req.userIndex;
-
+//  Patch 
+app.patch("/api/user/:id", getUserById, (req, res) => {
     const { body } = req;
-    users[userIndex] = { ...users[userIndex], ...body }
-    console.log(body);
-    res.status(200).send({msg:"user upadated successfully", updatedUser : user[userIndex]});
+    users[req.userIndex] = { ...users[req.userIndex], ...body };
+    saveData("users.json", users);
+    res.status(200).send({
+        msg: "User updated successfully!",
+        updatedUser: users[req.userIndex]
+    });
 });
 
-app.delete('/api/users/:id', getUserById, (req, res) => {
-    const userIndex = req.userIndex;
-    users.splice(userIndex, 1);
-    console.log(`user was deleted successfully !! `)
-    res.status(200);
-})
+// delete user
+app.delete("/api/users/:id", getUserById, (req, res) => {
+    users.splice(req.userIndex, 1);
+    saveData("users.json", users);
+    console.log("User deleted successfully!");
+    res.status(200).send({ msg: "User deleted successfully!" });
+});
 
+// protected
+app.get("/api/secret", auth, (req, res) => {
+    res.send({ msg: "✅ You have accessed a protected route!" });
+});
+
+// 🧱Invalid route
 app.use((req, res) => {
-    res.send({ msg: "invalid URL Bruhh" })
-})
+    res.status(404).send({ msg: "Invalid URL Bruhh 🧱" });
+});
 
+//  Centralized error handler
+app.use((err, req, res, next) => {
+    console.error("❌ Error:", err.message);
+    res.status(err.status || 500).send({
+        msg: err.message || "Internal Server Error"
+    });
+});
 
 app.listen(PORT, () => {
-    console.log(`server runing at port ${PORT}`)
-})
+    console.log(` Server running at http://localhost:${PORT}`);
+});
