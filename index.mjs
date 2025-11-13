@@ -215,8 +215,8 @@ app.get("/api/secret", auth, (req, res) => {
     res.send({ msg: " You have accessed a protected route!" });
 });
 
-app.get('/database', (req, res) => {
-    const query = 'SELECT * FROM stores';
+app.get('/students', (req, res) => {
+    const query = 'SELECT * FROM students';
     db.query(query, (err, data) => {
         if (err) {
             res.status(500).send('internel server error' + err);
@@ -224,7 +224,40 @@ app.get('/database', (req, res) => {
             res.status(200).json(data);
         }
     })
+});
+
+app.post('/add_student', (req, res) => {
+    const {name, age, marks, roles} =req.body;
+
+    const query = "INSERT INTO students (name, age, marks, roles) VALUES (?, ?, ?, ?) "
+    db.query(query, [name, age, marks, roles], (err, data) => {
+        if (err) {
+            res.status(500).send("internel server error !!");
+            console.log("error : ", err)
+        }
+        else {
+            res.status(201).send("data inserted sucessfull");
+        }
+    })
 })
+
+
+app.delete('/delete_student/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) 
+        return res.status(400).send({ msg: "Bad request!" });
+
+    const query = "DELETE FROM students WHERE id = ?";
+    db.query(query, [id], (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send({ msg: "Something went wrong :(" });
+        } else {
+            res.status(200).send({ msg: "Deleted successfully!" });
+        }
+    });
+});
+
 
 // Invalid route
 app.use((req, res) => {
