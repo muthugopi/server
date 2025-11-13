@@ -3,6 +3,10 @@ import morgan from "morgan";
 import cors from "cors";
 import fs from "fs";
 import mysql from "mysql2";
+import dotenv from "dotenv";
+
+dotenv.config();
+
 
 const app = exp();
 app.use(cors());
@@ -21,11 +25,11 @@ app.use((req, res, next) => {
 
 const PORT = 3000;
 
-const db = mysql.createConnection({
-    host:"localhost",
-    user:"root",
-    password:'MUTHU#gopi08',
-    database:'muthugopi'
+const db = await mysql.createPool({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
 
 db.connect((err) => {
@@ -83,7 +87,7 @@ const auth = (req, res, next) => {
 };
 
 // root
-app.get("/", (req, res) => {
+app.get("/home", (req, res) => {
     res.status(200).send({
         message: "MuthuGopi's API",
         available_routes: {
@@ -98,7 +102,7 @@ app.get("/", (req, res) => {
 });
 
 // Home
-app.get("/home", (req, res) => res.redirect("/"));
+app.get("/", (req, res) => res.redirect("/home"));
 
 
 app.get("/api/users", (req, res) => {
