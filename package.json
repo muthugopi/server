@@ -1,21 +1,22 @@
 {
   "name": "my-node-app",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.1",
+  "description": "this is made for practice express server",
   "main": "src/index.mjs",
   "scripts": {
-    "dev": "node ./index.mjs",
-    "start-dev": "nodemon ./index.mjs"
+    "dev": "node ./src/index.mjs",
+    "start-dev": "nodemon ./src/index.mjs",
+    "test": "nodemon server.mjs"
   },
-  "author": "MUTHUGOPI",
-  "license": "ISC",
+  "author": "MUTHUGOPI J",
+  "license": "MIT",
   "devDependencies": {
     "nodemon": "^3.0.1"
   },
   "dependencies": {
     "express": "^5.1.0",
-    "morgan": "^1.10.1"
+    "morgan": "^1.10.1",
+    "mysql2": "^3.15.3"
   },
   "type": "module"
 }
-
