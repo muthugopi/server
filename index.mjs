@@ -2,6 +2,7 @@ import exp from "express";
 import morgan from "morgan";
 import cors from "cors";
 import fs from "fs";
+import mysql from "mysql2";
 
 const app = exp();
 app.use(cors());
@@ -13,12 +14,28 @@ app.use((req, res, next) => {
     const start = Date.now();
     res.on("finish", () => {
         const duration = Date.now() - start;
-        console.log(`⏱️ ${req.method} ${req.originalUrl} - ${duration}ms`);
+        console.log(` ${req.method} ${req.originalUrl} - ${duration}ms`);
     });
     next();
 });
 
 const PORT = 3000;
+
+const db = mysql.createConnection({
+    host:"localhost",
+    user:"root",
+    password:'MUTHU#gopi08',
+    database:'muthugopi'
+});
+
+db.connect((err) => {
+    if(err) {
+        console.log("error while connecting to the database");
+    } else {
+        console.log("connected !!");
+    }
+});
+
 
 // data
 let users = [
@@ -68,7 +85,7 @@ const auth = (req, res, next) => {
 // root
 app.get("/", (req, res) => {
     res.status(200).send({
-        message: "Welcome to Seithur API 🚀",
+        message: "MuthuGopi's API",
         available_routes: {
             users: "/api/users",
             products: "/api/products",
@@ -80,7 +97,7 @@ app.get("/", (req, res) => {
     });
 });
 
-// Home=
+// Home
 app.get("/home", (req, res) => res.redirect("/"));
 
 
@@ -161,7 +178,7 @@ app.post("/api/user", (req, res) => {
 
     const newUser = { id: users[users.length - 1].id + 1, ...body };
     users.push(newUser);
-    saveData("users.json", users); // 💾 Save automatically
+    saveData("users.json", users); // Save automatically
 
     res.status(201).send(newUser);
 });
@@ -195,17 +212,28 @@ app.delete("/api/users/:id", getUserById, (req, res) => {
 
 // protected
 app.get("/api/secret", auth, (req, res) => {
-    res.send({ msg: "✅ You have accessed a protected route!" });
+    res.send({ msg: " You have accessed a protected route!" });
 });
 
-// 🧱Invalid route
+app.get('/database', (req, res) => {
+    const query = 'SELECT * FROM stores';
+    db.query(query, (err, data) => {
+        if (err) {
+            res.status(500).send('internel server error' + err);
+        } else {
+            res.status(200).json(data);
+        }
+    })
+})
+
+// Invalid route
 app.use((req, res) => {
-    res.status(404).send({ msg: "Invalid URL Bruhh 🧱" });
+    res.status(404).send({ msg: "Invalid URL Bruhh " });
 });
 
 //  Centralized error handler
 app.use((err, req, res, next) => {
-    console.error("❌ Error:", err.message);
+    console.error(" Error:", err.message);
     res.status(err.status || 500).send({
         msg: err.message || "Internal Server Error"
     });
