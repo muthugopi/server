@@ -26,10 +26,10 @@ const PORT = 3000;
 
 
 const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "MUTHU#gopi08",
-    database: "muthugopi"
+    host: "fuck",
+    user: "fuck",
+    password: "fuck",
+    database: "fuck"
 });
 
 db.connect((err) => {
@@ -294,3 +294,4 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
     console.log(` Server running at http://localhost:${PORT}`);
 });
+
