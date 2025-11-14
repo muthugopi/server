@@ -3,15 +3,14 @@ import morgan from "morgan";
 import cors from "cors";
 import fs from "fs";
 import mysql from "mysql2";
-import dotenv from "dotenv";
 
-dotenv.config();
 
 
 const app = exp();
 app.use(cors());
 app.use(exp.json());
 app.use(morgan("dev"));
+
 
 // log
 app.use((req, res, next) => {
@@ -25,25 +24,26 @@ app.use((req, res, next) => {
 
 const PORT = 3000;
 
-const db = await mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
+
+const db = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "MUTHU#gopi08",
+    database: "muthugopi"
 });
 
 db.connect((err) => {
-    if(err) {
-        console.log("error while connecting to the database");
+    if (err) {
+        console.log("Error while connecting:", err);
     } else {
-        console.log("connected !!");
+        console.log("Connected!");
     }
 });
 
 
 // data
 let users = [
-    { id: 1, name: "muthu" },
+    { id: 1, name: "muthu"},
     { id: 2, name: "gopi" },
     { id: 3, name: "emirates" },
     { id: 4, name: "muthugopi" }
@@ -232,7 +232,6 @@ app.get('/students', (req, res) => {
 
 app.post('/add_student', (req, res) => {
     const {name, age, marks, roles} =req.body;
-
     const query = "INSERT INTO students (name, age, marks, roles) VALUES (?, ?, ?, ?) "
     db.query(query, [name, age, marks, roles], (err, data) => {
         if (err) {
@@ -261,6 +260,22 @@ app.delete('/delete_student/:id', (req, res) => {
         }
     });
 });
+
+app.patch('/modify/:id', (req, res) => {
+    const id = req.params.id;
+    const {marks} = req.body;
+    const query = "UPDATE students SET marks = ? WHERE ?"
+
+    db.query(query, [marks, id], (err, data) => {
+
+        if (err) {
+            res.status(500).send({msg:"sorry error while updating !"})
+        }
+        else {
+            res.status(201).send({msg:"update successfully !!"});
+        }
+    })
+})
 
 
 // Invalid route
