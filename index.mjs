@@ -3,7 +3,8 @@ import morgan from "morgan";
 import cors from "cors";
 import fs from "fs";
 import mysql from "mysql2";
-
+import { createUserValidationSchema } from "./utils/validationSchemas.mjs";
+import { validationResult, matchedData, checkSchema } from "express-validator";
 
 
 const app = exp();
@@ -26,10 +27,10 @@ const PORT = 3000;
 
 
 const db = mysql.createConnection({
-    host: "fuck",
-    user: "fuck",
-    password: "fuck",
-    database: "fuck"
+    host: "localhost",
+    user: "root",
+    password: "MUTHU#gopi08",
+    database: "muthugopi"
 });
 
 db.connect((err) => {
@@ -182,10 +183,11 @@ app.post("/api/user", (req, res) => {
 
     const newUser = { id: users[users.length - 1].id + 1, ...body };
     users.push(newUser);
-    saveData("users.json", users); // Save automatically
+    saveData("users.json", users);
 
     res.status(201).send(newUser);
 });
+
 
 // Update full user
 app.put("/api/user/:id", getUserById, (req, res) => {
@@ -230,8 +232,15 @@ app.get('/students', (req, res) => {
     })
 });
 
-app.post('/add_student', (req, res) => {
-    const {name, age, marks, roles} =req.body;
+app.post('/add_student',
+    checkSchema(createUserValidationSchema),
+     (req, res) => {
+        const result = validationResult(req);
+
+        if ( !result.isEmpty()) {
+            return res.status(422).send({msg:"bad request !!"});
+        }
+    const {name, age, marks, roles} =matchedData(req.body);
     const query = "INSERT INTO students (name, age, marks, roles) VALUES (?, ?, ?, ?) "
     db.query(query, [name, age, marks, roles], (err, data) => {
         if (err) {
@@ -294,4 +303,3 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
     console.log(` Server running at http://localhost:${PORT}`);
 });
-
