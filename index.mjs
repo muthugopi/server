@@ -2,24 +2,15 @@ import exp from "express";
 import morgan from "morgan";
 import cors from "cors";
 import fs from "fs";
-import mysql from "mysql2";
-import dotenv from "dotenv";
 import { createUserValidationSchema } from "./utils/validationSchemas.mjs";
 import { validationResult, matchedData, checkSchema } from "express-validator";
+import db from './utils/db.mjs';
 
 
 const app = exp();
 app.use(cors());
 app.use(exp.json());
 app.use(morgan("dev"));
-dotenv.config();
-
-const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
-});
 
 
 // log
@@ -35,13 +26,15 @@ app.use((req, res, next) => {
 const PORT = 3000;
 
 
-db.connect((err) => {
+db.getConnection((err, connection) => {
     if (err) {
-        console.log("Error while connecting:", err);
+        console.error("Database connection failed:", err);
     } else {
-        console.log("Connected!");
+        console.log("Database connected successfully!");
+        connection.release();
     }
 });
+
 
 
 // data
@@ -275,7 +268,7 @@ app.delete('/delete_student/:id', (req, res) => {
 app.patch('/modify/:id', (req, res) => {
     const id = req.params.id;
     const {marks} = req.body;
-    const query = "UPDATE students SET marks = ? WHERE ?"
+    const query = "UPDATE students SET marks = ? WHERE id = ?"
 
     db.query(query, [marks, id], (err, data) => {
 
