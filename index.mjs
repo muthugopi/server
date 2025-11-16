@@ -5,6 +5,7 @@ import fs from "fs";
 import { createUserValidationSchema } from "./utils/validationSchemas.mjs";
 import { validationResult, matchedData, checkSchema } from "express-validator";
 import db from './utils/db.mjs';
+import errorHandle from "./utils/errorHandling.mjs";
 
 
 const app = exp();
@@ -65,10 +66,10 @@ const saveData = (filename, data) => {
 //Middleware-Get user by ID
 const getUserById = (req, res, next) => {
     const id = parseInt(req.params.id);
-    if (isNaN(id)) return res.status(400).send({ msg: "Invalid ID!" });
+    if (isNaN(id)) return errorHandle(req, res, 404, "invalid Id");
 
     const userIndex = users.findIndex((u) => u.id === id);
-    if (userIndex === -1) return res.status(404).send({ msg: "User not found!" });
+    if (userIndex === -1) return errorHandle(req, res, 404, "user not found bruhh !!");
 
     req.userIndex = userIndex;
     req.userId = id;
@@ -99,6 +100,10 @@ app.get("/home", (req, res) => {
 
 // Home
 app.get("/", (req, res) => res.redirect("/home"));
+
+app.get('/testing', (req, res) => {
+    errorHandle(req, res, 200, "this is not a error !!");
+})
 
 
 app.get("/api/users", (req, res) => {
@@ -284,7 +289,7 @@ app.patch('/modify/:id', (req, res) => {
 
 // Invalid route
 app.use((req, res) => {
-    res.status(404).send({ msg: "Invalid URL Bruhh " });
+    errorHandle(404, "invalid Id");
 });
 
 //  Centralized error handler
