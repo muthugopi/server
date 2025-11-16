@@ -3,6 +3,7 @@ import morgan from "morgan";
 import cors from "cors";
 import fs from "fs";
 import mysql from "mysql2";
+import dotenv from "dotenv";
 import { createUserValidationSchema } from "./utils/validationSchemas.mjs";
 import { validationResult, matchedData, checkSchema } from "express-validator";
 
@@ -11,6 +12,14 @@ const app = exp();
 app.use(cors());
 app.use(exp.json());
 app.use(morgan("dev"));
+dotenv.config();
+
+const db = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
+});
 
 
 // log
@@ -25,13 +34,6 @@ app.use((req, res, next) => {
 
 const PORT = 3000;
 
-
-const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "MUTHU#gopi08",
-    database: "muthugopi"
-});
 
 db.connect((err) => {
     if (err) {
@@ -240,7 +242,7 @@ app.post('/add_student',
         if ( !result.isEmpty()) {
             return res.status(422).send({msg:"bad request !!"});
         }
-    const {name, age, marks, roles} =matchedData(req.body);
+    const {name, age, marks, roles} =matchedData(req);
     const query = "INSERT INTO students (name, age, marks, roles) VALUES (?, ?, ?, ?) "
     db.query(query, [name, age, marks, roles], (err, data) => {
         if (err) {
@@ -303,4 +305,3 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
     console.log(` Server running at http://localhost:${PORT}`);
 });
-
