@@ -5,7 +5,7 @@ import fs from "fs";
 import { createUserValidationSchema } from "./utils/validationSchemas.mjs";
 import { validationResult, matchedData, checkSchema } from "express-validator";
 import db from './utils/db.mjs';
-import errorHandle from "./utils/errorHandling.mjs";
+import {notFound, serverError, customeError} from './utils/errorHandling.mjs';
 
 
 const app = exp();
@@ -66,10 +66,10 @@ const saveData = (filename, data) => {
 //Middleware-Get user by ID
 const getUserById = (req, res, next) => {
     const id = parseInt(req.params.id);
-    if (isNaN(id)) return errorHandle(req, res, 404, "invalid Id");
+    if (isNaN(id)) return res.status(400).send("Bad Request !");
 
     const userIndex = users.findIndex((u) => u.id === id);
-    if (userIndex === -1) return errorHandle(req, res, 404, "user not found bruhh !!");
+    if (userIndex === -1) return res.status(404).send({msg:"User Not Found !!"});
 
     req.userIndex = userIndex;
     req.userId = id;
@@ -80,7 +80,7 @@ const getUserById = (req, res, next) => {
 const auth = (req, res, next) => {
     const token = req.headers.authorization;
     if (token === "Bearer seithur-secret") next();
-    else res.status(401).send({ msg: "Unauthorized Access" });
+    else customeError(res, 401, "Unauthorized access");
 };
 
 // root
@@ -101,10 +101,9 @@ app.get("/home", (req, res) => {
 // Home
 app.get("/", (req, res) => res.redirect("/home"));
 
-app.get('/testing', (req, res) => {
-    errorHandle(req, res, 200, "this is not a error !!");
+app.get('/test', (req, res) => {
+    notFound(res, "this is just for testing !!");
 })
-
 
 app.get("/api/users", (req, res) => {
     const { filter, value, sortBy = "id", order = "asc", page = 1, limit = 5 } = req.query;
@@ -159,19 +158,19 @@ app.get("/api/student_names", (req, res) => {
 
 app.get("/api/products/:id", (req, res) => {
     const id = parseInt(req.params.id);
-    if (isNaN(id)) return res.status(400).send({ msg: "Invalid product ID" });
+    if (isNaN(id)) return customeError(res, 400, "Invalid Product Id !");
 
     const product = products.find((p) => p.id === id);
-    if (!product) return res.status(404).send({ msg: "Product not available" });
+    if (!product) return notFound(res, "product Not Found");
 
-    res.status(200).send(product);
+    res.status(200).send(product)
 });
 
 
 app.get("/api/users/:id", (req, res) => {
     const id = parseInt(req.params.id);
     const user = users.find((u) => u.id === id);
-    if (!user) return res.status(404).send({ msg: "User Not Found!" });
+    if (!user) return notFound(res, "User Not Found");
     res.status(200).send(user);
 });
 
@@ -179,7 +178,7 @@ app.get("/api/users/:id", (req, res) => {
 app.post("/api/user", (req, res) => {
     const { body } = req;
     const exist = users.find((u) => u.name === body.name);
-    if (exist) return res.status(409).send({ msg: "User already exists!" });
+    if (exist) return customeError(res, 409, "User Already Exist");
 
     const newUser = { id: users[users.length - 1].id + 1, ...body };
     users.push(newUser);
@@ -225,7 +224,7 @@ app.get('/students', (req, res) => {
     const query = 'SELECT * FROM students';
     db.query(query, (err, data) => {
         if (err) {
-            res.status(500).send('internel server error' + err);
+            return serverError(res, `Internel server error ${err}`);
         } else {
             res.status(200).json(data);
         }
@@ -238,13 +237,13 @@ app.post('/add_student',
         const result = validationResult(req);
 
         if ( !result.isEmpty()) {
-            return res.status(422).send({msg:"bad request !!"});
+            return customeError(res, 422, "Bad Request ! ");
         }
     const {name, age, marks, roles} =matchedData(req);
     const query = "INSERT INTO students (name, age, marks, roles) VALUES (?, ?, ?, ?) "
     db.query(query, [name, age, marks, roles], (err, data) => {
         if (err) {
-            res.status(500).send("internel server error !!");
+            serverError(res);
             console.log("error : ", err)
         }
         else {
@@ -263,7 +262,7 @@ app.delete('/delete_student/:id', (req, res) => {
     db.query(query, [id], (err, result) => {
         if (err) {
             console.error(err);
-            res.status(500).send({ msg: "Something went wrong :(" });
+           return serverError(res);
         } else {
             res.status(200).send({ msg: "Deleted successfully!" });
         }
@@ -278,7 +277,7 @@ app.patch('/modify/:id', (req, res) => {
     db.query(query, [marks, id], (err, data) => {
 
         if (err) {
-            res.status(500).send({msg:"sorry error while updating !"})
+            serverError(res);
         }
         else {
             res.status(201).send({msg:"update successfully !!"});
@@ -289,7 +288,7 @@ app.patch('/modify/:id', (req, res) => {
 
 // Invalid route
 app.use((req, res) => {
-    errorHandle(404, "invalid Id");
+    res.status(404).send("page not found bruhh !!");
 });
 
 //  Centralized error handler
