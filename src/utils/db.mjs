@@ -15,4 +15,13 @@ const db = mysql.createPool({
   queueLimit: 0
 });
 
+db.getConnection((err, connection) => {
+    if (err) {
+        console.error("Database connection failed:", err);
+    } else {
+        console.log("Database connected successfully!");
+        connection.release();
+    }
+});
+
 export default db;

@@ -3,14 +3,6 @@ import { notFound, customeError, serverError } from "../src/utils/errorHandling.
 import { validationResult, matchedData } from "express-validator";
 
 
-db.getConnection((err, connection) => {
-    if (err) {
-        console.error("Database connection failed:", err);
-    } else {
-        console.log("Database connected successfully!");
-        connection.release();
-    }
-});
 
 export const getAllStudents = (req, res) => {
     const query = "SELECT * FROM students";
@@ -35,7 +27,7 @@ export const createStudent = (req, res) => {
     const query = "INSERT INTO students (name, age, marks, roles) VALUES (?, ?, ?, ?) ";
     db.query(query, [name, age, marks, roles], (err, data) => {
         if (err) {
-            serverError(res);
+            return serverError(res);
         }
         else {
             res.status(201).send("data inserted sucessfull");
@@ -59,7 +51,7 @@ export const modifyStudent = (req, res) => {
 }
 
 export const deleteStudent = (req, res) => {
-    const name = req.body;
+    const { name } = req.body;
 
     const query = "DELETE FROM students WHERE name = ?";
     db.query(query, [name], (err, result) => {

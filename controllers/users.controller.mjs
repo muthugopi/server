@@ -2,17 +2,8 @@ import db from '../src/utils/db.mjs';
 import { notFound, serverError, customeError } from '../src/utils/errorHandling.mjs';;
 import { validationResult, matchedData } from 'express-validator';
 
-db.getConnection((err, connection) => {
-    if (err) {
-        console.error("Database connection failed:", err);
-    } else {
-        console.log("Database connected successfully!");
-        connection.release();
-    }
-});
-
 export const getAllUsers = (req, res) => {
-    const query = "SELECT * FROM users";
+    const query = "SELECT name, phone FROM users";
     db.query(query, (err, data) => {
         if(err) { serverError(res);}
         else {
