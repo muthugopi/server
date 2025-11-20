@@ -1,4 +1,4 @@
-Project Overview
+**Project Overview**
 
 This project is a practice backend server built with Node.js and MySQL.
 It supports:
