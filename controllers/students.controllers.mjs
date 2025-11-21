@@ -30,7 +30,7 @@ export const createStudent = (req, res) => {
             return serverError(res);
         }
         else {
-            res.status(201).send("data inserted sucessfull");
+           return res.status(201).send("data inserted sucessfull");
         }
     })
 }

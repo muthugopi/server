@@ -1,4 +1,6 @@
-export const createUserValidationSchema = {
+import { option } from "framer-motion/client";
+
+export const createStudentValidationSchema = {
   name: {
     notEmpty: {
       errorMessage: "Name is required"
@@ -36,3 +38,25 @@ export const createUserValidationSchema = {
     }
   }
 };
+
+
+export const createUserValidationSchema = {
+  name : {
+    notEmpty: {
+      errorMessage : "Name is required"
+    },
+    isLength : {
+      option : {min:3, max:30},
+      errorMessage : "Name must be 3 - 30 charecters"
+    }
+  },
+  phone : {
+    notEmpty : {
+      errorMessage : "phone number is required"
+    },
+    isNumeric : {
+      errorMessage : "Phone Number must be is Numeric"
+    }
+  }
+
+}
