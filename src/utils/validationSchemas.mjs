@@ -1,4 +1,5 @@
 import { option } from "framer-motion/client";
+import { Mail } from "lucide-react";
 
 export const createStudentValidationSchema = {
   name: {
@@ -59,4 +60,23 @@ export const createUserValidationSchema = {
     }
   }
 
+}
+
+
+export const createMessageValidationSchema = {
+  name: {
+    notEmpty: {
+      errorMessage: "Name cannot be empty"
+    }
+  },
+  mail: {
+    isEmail: {
+      errorMessage: "Please provide a valid email"
+    }
+  },
+  message: {
+    notEmpty: {
+      errorMessage: "Message cannot be empty"
+    }
+  }
 }
