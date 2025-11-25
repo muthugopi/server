@@ -1,5 +1,3 @@
-import { option } from "framer-motion/client";
-import { Mail } from "lucide-react";
 
 export const createStudentValidationSchema = {
   name: {
