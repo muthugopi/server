@@ -1,4 +1,3 @@
-import { data } from "framer-motion/client";
 import db from "../src/utils/db.mjs";
 import { serverError, customeError } from "../src/utils/errorHandling.mjs";
 import { validationResult, matchedData } from "express-validator";
@@ -33,4 +32,5 @@ export const showMessages = (req, res) => {
             res.status(200).send(data)
         ]
     })
+
 }
