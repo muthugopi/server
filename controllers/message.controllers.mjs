@@ -1,3 +1,4 @@
+import { data } from "framer-motion/client";
 import db from "../src/utils/db.mjs";
 import { serverError, customeError } from "../src/utils/errorHandling.mjs";
 import { validationResult, matchedData } from "express-validator";
@@ -26,11 +27,10 @@ export const showMessages = (req, res) => {
 
     db.query(query, (err, data)=> {
         if(err) {
-            serverError(res);
+            serverError(res); 
         }
         else [
             res.status(200).send(data)
         ]
     })
-
 }
