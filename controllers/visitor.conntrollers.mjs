@@ -14,7 +14,7 @@ export const trackVisitor = (req, res) => {
 
   visitors.push(visitor);
 
-  console.log("🔥 NEW VISITOR STORED:", visitor);
+  console.log(" NEW VISITOR STORED:", visitor);
 
   res.json({ message: "Visitor saved!", visitor });
 };
