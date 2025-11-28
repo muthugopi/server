@@ -7,7 +7,7 @@ export const getAllUsers = (req, res) => {
     db.query(query, (err, data) => {
         if(err) { serverError(res);}
         else {
-            return res.status(200).send(data);
+            return res.status(418).send(data);
         }
     })
 }

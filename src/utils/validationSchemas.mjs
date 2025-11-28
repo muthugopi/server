@@ -78,3 +78,21 @@ export const createMessageValidationSchema = {
     }
   }
 }
+
+export const createRegisterValidationSchema = {
+  name: {
+    notEmpty : {
+      errorMessage : "Name must not be empty !"
+    }
+  },
+  password : {
+      notEmpty : {
+        errorMessage : "please provide the password !"
+      }
+  },
+  phone : {
+    notEmpty : {
+      errorMessage : "Enter the phone number ! :("
+    }
+  }
+}
