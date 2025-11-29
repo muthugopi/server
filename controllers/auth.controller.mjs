@@ -4,5 +4,5 @@ import { validationResult, matchedData } from "express-validator";
 
 export const checkAuth = (req, res) => {
     const {name, password} = req.body;
-``
+
 }
