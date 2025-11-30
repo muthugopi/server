@@ -2,7 +2,7 @@ import { matchedData, validationResult } from "express-validator";
 import db from "../src/utils/db.mjs";
 import { serverError, notFound, customeError } from "../src/utils/errorHandling.mjs";
 
-const regQuery = 'INSERT INTO users (name, password, phone) VALUE (?, ?, ?)';
+const regQuery = 'INSERT INTO users (name, password, phone) VALUES (?, ?, ?)';
 const logQuery = 'SELECT * FROM users WHERE (name, password) = (?, ?)';
 
 export const register = (req, res) => {
@@ -13,37 +13,38 @@ export const register = (req, res) => {
     const { name, password, phone } = matchedData(req);
     db.query(regQuery, [name, password, phone], (err) => {
 
-        if (err.code === "ER_DUP_ENTRY") {
-            if (err) {
-                return serverError(res, err);
-            }
-            return customeError(res, 418, "can't duplicate the phone number")
-        }
+        if (err) {
+    if (err.code === "ER_DUP_ENTRY") {
+        return customeError(res, 409, "Duplicate entry (phone or name)");
+    }
+    return serverError(res, err);
+}
+
 
         return res.status(201).send({ success: true, msg: "registerd successful !" });
     })
 }
 
-export const login = (req, res) => {
+export const login = (req, res, next) => {
     const { name, password } = req.body;
 
-    const logQuery = 'SELECT * FROM users WHERE name = ?';
+    const logQuery = 'SELECT * FROM users WHERE name = ? AND password = ?';
 
-    db.query(logQuery, [name], (err, data) => {
+    db.query(logQuery, [name, password], (err, data) => {
 
         if (err) {
+            console.error(err);
             return customeError(res, 500, "Database error");
+        }
 
-        }
         if (data.length === 0) {
-            return customeError(res, 404, "User doesn't exist!");
+            return customeError(res, 404, "Invalid name or password!");
         }
-        const user = data[0];
-        if (password !== user.password) {
-            return customeError(res, 401, "Password doesn't match, try again!");
-        }
-        return res.status(200).send("Access Granted. Logged in!");
+
+        res.status(200).send("Access Granted. Logged in!");
+        next();
     });
 };
+
 
 

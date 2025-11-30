@@ -32,3 +32,14 @@ export const createUser = (req, res) => {
         }
     } )
 }
+
+export const  deleteUser = (req, res) => {
+    const query = "DELETE FROM users WHERE name = ?";
+    const {name} = req.body
+    db.query(query, [name], (err) => {
+        if(err) {
+            return serverError(res);
+        }
+        return res.status(200).send("User Deleted SuccessfullY !!");
+    })
+}
