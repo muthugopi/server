@@ -5,8 +5,8 @@ import studentsRouter from '../routes/students.routes.mjs';
 import userRouter from '../routes/users.routes.mjs';
 import contactRouter from '../routes/contact.routes.mjs';
 import registerRouter from '../routes/register.router.mjs';
-import { myCookie } from './cookie.learn.mjs';
-import cookieParser from 'cookie-parser';
+//import { myCookie } from './cookie.learn.mjs';
+//import cookieParser from 'cookie-parser';
 
 const app = express();
 

@@ -1,5 +1,6 @@
 import mysql from 'mysql2';
 import dotenv from 'dotenv';
+import logger from './logger.mjs';
 
 dotenv.config(); // Load .env variables
 
@@ -17,9 +18,10 @@ const db = mysql.createPool({
 
 db.getConnection((err, connection) => {
     if (err) {
+        logger.error("Error inside the DB ")
         console.error("Database connection failed:", err);
     } else {
-        console.log("Database connected successfully!");
+        logger.info("Server Connected Successfully !");
         connection.release();
     }
 });
