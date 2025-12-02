@@ -19,24 +19,27 @@ export const checkUser = (req, res, next) => {
         const user = data[0];
 
         if (user.password !== password) {
-            return customeError(res, 400, `Password doen't matchedm : ${data}`);
+            return customeError(res, 400, `Password doesn't matched : ${[...data]}`);
         }
         next()
     });
 };
 
 
-export const isAdmin = (req, res) => {
-    const {name} = req.body;
+export const isAdmin = (req, res, next) => {
+    const { name } = req.body;
     const query = 'SELECT * FROM admins WHERE name = ?';
-    db.query(query, name, (err, res) => {
-        if(err) {
-            return serverError(res);
+    
+    db.query(query, [name], (err, result) => {
+        if (err) {
+            return serverError(res); 
+        } 
+        if (result.length === 0) {
+            return notFound(res, "You're not an admin buddy!!");
         }
-        else if(data.length == 0) {
-            return notFound(res, "Your Not A Admin Buddy !!");
-        }
-        
-    })
+        console.log("access garented")
+        next();
+    });
 }
+
 

@@ -1,28 +1,31 @@
 import { matchedData, validationResult } from "express-validator";
+import bcrypt from 'bcrypt';
 import db from "../src/utils/db.mjs";
 import { serverError, notFound, customeError } from "../src/utils/errorHandling.mjs";
 
 const regQuery = 'INSERT INTO users (name, password, phone) VALUES (?, ?, ?)';
 const logQuery = 'SELECT * FROM users WHERE (name, password) = (?, ?)';
 
-export const register = (req, res) => {
+export const register = async (req, res) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
-        return customeError(res, 400, "Mismatched Schema !");
+        return customError(res, 400, "Mismatched Schema !");
     }
+
     const { name, password, phone } = matchedData(req);
-    db.query(regQuery, [name, password, phone], (err) => {
+    const saltsRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltsRounds);
 
+    db.query(regQuery, [name, hashedPassword, phone], (err) => {
         if (err) {
-    if (err.code === "ER_DUP_ENTRY") {
-        return customeError(res, 409, "Duplicate entry (phone or name)");
-    }
-    return serverError(res, err);
-}
+            if (err.code === "ER_DUP_ENTRY") {
+                return customError(res, 409, "Duplicate entry (phone or name)");
+            }
+            return serverError(res, err);
+        }
 
-
-        return res.status(201).send({ success: true, msg: "registerd successful !" });
-    })
+        return res.status(201).send({ success: true, msg: "Registered successfully!" });
+    });
 }
 
 export const login = (req, res, next) => {
