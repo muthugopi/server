@@ -43,6 +43,10 @@ express-validator for validation
 
 dotenv for environment variables
 
+bcrypt for hashing the passwords
+
+basic cookies
+
 morgan for logging
 
 cors for Cross-Origin Resource Sharing
