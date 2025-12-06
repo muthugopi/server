@@ -5,6 +5,8 @@ import { validationResult, matchedData } from "express-validator";
 
 
 export const getAllStudents = (req, res) => {
+    req.session.visited = true;
+    console.log(req.session.id);
     const query = "SELECT * FROM students";
 
     db.query(query, (err, result) => {
