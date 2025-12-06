@@ -1,16 +1,17 @@
 import db from "../src/utils/db.mjs";
 import { customeError, serverError, notFound } from "../src/utils/errorHandling.mjs";
+import bcrypt from 'bcrypt';
+
+//check if the user is valid or not !
 
 export const checkUser = (req, res, next) => {
     const { name, password } = req.body;
 
     const query = 'SELECT * FROM users WHERE name = ?';
-    db.query(query, [name], (err, data) => {
 
-        if (err) {
-            return serverError(res);
-        }
+    db.query(query, [name], async (err, data) => {
 
+        if (err) return serverError(res);
 
         if (data.length === 0) {
             return notFound(res, "User not found");
@@ -18,10 +19,14 @@ export const checkUser = (req, res, next) => {
 
         const user = data[0];
 
-        if (user.password !== password) {
-            return customeError(res, 400, `Password doesn't matched : ${[...data]}`);
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
+            return customeError(res, 400, "Password does not match");
         }
-        next()
+
+        req.userData = {id:user.id,name:user.name}
+        next();
     });
 };
 

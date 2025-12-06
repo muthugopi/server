@@ -1,8 +1,7 @@
 import { matchedData, validationResult } from "express-validator";
 import bcrypt from 'bcrypt';
 import db from "../src/utils/db.mjs";
-import { serverError, notFound, customeError } from "../src/utils/errorHandling.mjs";
-
+import { serverError, customeError } from "../src/utils/errorHandling.mjs";
 const regQuery = 'INSERT INTO users (name, password, phone) VALUES (?, ?, ?)';
 const logQuery = 'SELECT * FROM users WHERE (name, password) = (?, ?)';
 
@@ -28,26 +27,6 @@ export const register = async (req, res) => {
     });
 }
 
-export const login = (req, res, next) => {
-    const { name, password } = req.body;
-
-    const logQuery = 'SELECT * FROM users WHERE name = ? AND password = ?';
-
-    db.query(logQuery, [name, password], (err, data) => {
-
-        if (err) {
-            console.error(err);
-            return customeError(res, 500, "Database error");
-        }
-
-        if (data.length === 0) {
-            return customeError(res, 404, "Invalid name or password!");
-        }
-
-        res.status(200).send("Access Granted. Logged in!");
-        next();
-    });
-};
 
 
 
