@@ -7,6 +7,8 @@ import contactRouter from '../routes/contact.routes.mjs';
 import registerRouter from '../routes/register.router.mjs';
 import loginRouter from '../routes/login.routes.mjs';
 import session from 'express-session';
+//import { Strategy as LocalStrategy } from 'passport-local';
+//import passport from 'passport';
 //import { cookie } from 'express-validator';
 //import { myCookie } from './cookie.learn.mjs';
 //import cookieParser from 'cookie-parser';

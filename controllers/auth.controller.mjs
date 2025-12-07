@@ -1,6 +1,7 @@
 import db from "../src/utils/db.mjs";
 import { customeError, serverError, notFound } from "../src/utils/errorHandling.mjs";
 import bcrypt from 'bcrypt';
+//import { Strategy as LocalStrategy } from "passport-local";
 
 //check if the user is valid or not !
 
@@ -29,7 +30,6 @@ export const checkUser = (req, res, next) => {
         next();
     });
 };
-
 export const isLogined = (req, res, next) => {
     if(req.session.isLogined) {
         return res.status(200).send({
