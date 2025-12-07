@@ -1,7 +1,8 @@
 import { matchedData, validationResult } from "express-validator";
 import bcrypt from 'bcrypt';
+
 import db from "../src/utils/db.mjs";
-import { serverError, customeError } from "../src/utils/errorHandling.mjs";
+import { serverError, customError } from "../src/utils/errorHandling.mjs";
 const regQuery = 'INSERT INTO users (name, password, phone) VALUES (?, ?, ?)';
 const logQuery = 'SELECT * FROM users WHERE (name, password) = (?, ?)';
 

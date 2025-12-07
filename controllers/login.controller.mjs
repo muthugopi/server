@@ -8,11 +8,12 @@ export const login = (req, res) => {
         "secret",
         { expiresIn: "1d" }
     );
+   
     req.session.isLogined = true;
     req.session.token = token;
 
     return res.status(200).send({
         success: true,
-        msg: "Access Granted. Logged in!" 
+        msg: "Access Granted. Logged in!"
     });
 };

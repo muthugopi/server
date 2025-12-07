@@ -1,5 +1,5 @@
 import db from '../src/utils/db.mjs';
-import { notFound, serverError, customeError, sendError } from '../src/utils/errorHandling.mjs';;
+import { serverError, customError, sendError } from '../src/utils/errorHandling.mjs';;
 import { validationResult, matchedData } from 'express-validator';
 
 export const getAllUsers = (req, res) => {
@@ -19,7 +19,7 @@ export const createUser = (req, res) => {
     //}
     const result = validationResult(req);
     if(!result.isEmpty()) {
-        return customeError(res, 400, "Bad Request")
+        return customError(res, 400, "Bad Request")
     }
     const {name, phone} = matchedData(req);
     const query = "INSERT INTO users (name, phone) values (?, ?)";

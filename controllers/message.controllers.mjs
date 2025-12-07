@@ -1,12 +1,12 @@
 
 import db from "../src/utils/db.mjs";
-import { serverError, customeError } from "../src/utils/errorHandling.mjs";
+import { serverError, customError } from "../src/utils/errorHandling.mjs";
 import { validationResult, matchedData } from "express-validator";
 
 export const getMessage = (req, res) => {
     const result = validationResult(req);
     if(!result.isEmpty()) {
-        customeError(result, 400, 'Bad Request');
+        customError(result, 400, 'Bad Request');
     }
 
     const {name, mail, message} = matchedData(req);
