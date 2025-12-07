@@ -1,17 +1,18 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
 export const login = (req, res) => {
-    const {id, name} = req.userData;
+    const { id, name } = req.user;
+
     const token = jwt.sign(
-            { id:id, name: name },
-            "secret",
-            { expiresIn: "1d" }
-        );
+        { id, name },
+        "secret",
+        { expiresIn: "1d" }
+    );
+    req.session.isLogined = true;
+    req.session.token = token;
 
-        req.session.isLogined = true;
-
-        return res.status(200).send({
-            success: true,
-            msg: "Access Granted. Logged in!"
-        });
+    return res.status(200).send({
+        success: true,
+        msg: "Access Granted. Logged in!" 
+    });
 };
