@@ -1,4 +1,4 @@
-export const server_datas = {
+export let server_datas = {
     visitors : 0,
     admin_visits : 0,
     accounts : 0,
@@ -7,5 +7,5 @@ export const server_datas = {
 }
 
 export const showData = (req, res) => {
-    res.send(server_datas);
+    res.status(200).send(server_datas);
 }
