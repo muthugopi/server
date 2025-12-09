@@ -1,6 +1,15 @@
-src/combined.log
-src/error.log
+# logs
+combined.log
+error.log
+src/*.log
 
-node_modules/
-package.json
-package-lock.json
+# environment
+.env
+
+# IDE folders
+.idea/
+
+# optional: ignore logger file
+src/utils/logger.mjs
+
+node_modules
