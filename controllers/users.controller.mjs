@@ -1,9 +1,12 @@
 import db from '../src/utils/db.mjs';
 import { serverError, customError, sendError } from '../src/utils/errorHandling.mjs';;
 import { validationResult, matchedData } from 'express-validator';
+import { server_datas } from './data.controller.mjs';
 
 export const getAllUsers = (req, res) => {
     const query = "SELECT name, phone FROM users";
+    server_datas.requests += 1;
+    console.log(server_datas.requests);
     db.query(query, (err, data) => {
         if(err) { serverError(res);}
         else {
