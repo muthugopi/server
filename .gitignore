@@ -1,0 +1,6 @@
+src/combined.log
+src/error.log
+
+node_modules/
+package.json
+package-lock.json
