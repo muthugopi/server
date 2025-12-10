@@ -1,9 +1,11 @@
 import db from '../src/utils/db.mjs';
-import { notFound, serverError, customeError, sendError } from '../src/utils/errorHandling.mjs';;
+import { serverError, customError } from '../src/utils/errorHandling.mjs';
 import { validationResult, matchedData } from 'express-validator';
+import { server_datas } from './data.controller.mjs';
 
 export const getAllUsers = (req, res) => {
     const query = "SELECT name, phone FROM users";
+    server_datas.requests += 1;
     db.query(query, (err, data) => {
         if(err) { serverError(res);}
         else {
@@ -19,7 +21,7 @@ export const createUser = (req, res) => {
     //}
     const result = validationResult(req);
     if(!result.isEmpty()) {
-        return customeError(res, 400, "Bad Request")
+        return customError(res, 400, "Bad Request");
     }
     const {name, phone} = matchedData(req);
     const query = "INSERT INTO users (name, phone) values (?, ?)";
@@ -28,6 +30,8 @@ export const createUser = (req, res) => {
             serverError(res);
         }
         else {
+            server_datas.requests += 1;
+            server_datas.admin_visits += 1;
             return res.status(201).send({status:"Success", Message:"Added !"});
         }
     } )
@@ -35,7 +39,9 @@ export const createUser = (req, res) => {
 
 export const  deleteUser = (req, res) => {
     const query = "DELETE FROM users WHERE name = ?";
-    const {name} = req.body
+    server_datas.requests += 1;
+    admin_visits.requests += 1;
+    const {name} = req.body;
     db.query(query, [name], (err) => {
         if(err) {
             return serverError(res);

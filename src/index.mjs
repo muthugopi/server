@@ -7,6 +7,10 @@ import contactRouter from '../routes/contact.routes.mjs';
 import registerRouter from '../routes/register.router.mjs';
 import loginRouter from '../routes/login.routes.mjs';
 import session from 'express-session';
+import home from '../routes/home.routes.mjs'
+import { showData as data } from '../controllers/data.controller.mjs';
+import { isAdmin } from '../controllers/auth.controller.mjs';
+//import { showData } from '../controllers/data.controller.mjs';
 //import { Strategy as LocalStrategy } from 'passport-local';
 //import passport from 'passport';
 //import { cookie } from 'express-validator';
@@ -16,7 +20,6 @@ import session from 'express-session';
 const app = express();
 
 app.use(express.json()); 
-
 app.use(morgan('dev'));
 app.use(cors());
 
@@ -31,7 +34,8 @@ app.use(session({
 
 //app.use(cookieParser("muthugopi"));
 //app.use(myCookie);
-
+app.use('/', home);
+app.use('/data', isAdmin, data)
 app.use('/register', registerRouter);
 app.use('/login', loginRouter);
 app.use('/students', studentsRouter);

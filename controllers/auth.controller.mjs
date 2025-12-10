@@ -1,5 +1,5 @@
 import db from "../src/utils/db.mjs";
-import { customeError, serverError, notFound } from "../src/utils/errorHandling.mjs";
+import { customError, serverError, notFound } from "../src/utils/errorHandling.mjs";
 import bcrypt from 'bcrypt';
 //import { Strategy as LocalStrategy } from "passport-local";
 
@@ -23,7 +23,7 @@ export const checkUser = (req, res, next) => {
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            return customeError(res, 400, "Password does not match");
+            return customError(res, 400, "Password does not match");
         }
 
         req.userData = {id:user.id,name:user.name}

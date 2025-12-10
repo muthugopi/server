@@ -16,6 +16,6 @@ export function serverError(res, message="Internel Server Error") {
     return sendError(res, 500, message);
 }
 
-export function customeError(res, code, message) {
+export function customError(res, code, message) {
     return sendError(res, code, message);
 }

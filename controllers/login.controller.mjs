@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { server_datas } from "./data.controller.mjs";
 
 export const login = (req, res) => {
     const { id, name } = req.user;
@@ -8,11 +9,14 @@ export const login = (req, res) => {
         "secret",
         { expiresIn: "1d" }
     );
+   
     req.session.isLogined = true;
     req.session.token = token;
+    server_datas.requests += 1;
+    server_datas.logined += 1;
 
     return res.status(200).send({
         success: true,
-        msg: "Access Granted. Logged in!" 
+        msg: "Access Granted. Logged in!"
     });
 };
