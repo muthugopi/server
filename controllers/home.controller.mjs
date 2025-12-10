@@ -1,6 +1,8 @@
 import os from 'os'
+import { server_datas } from './data.controller.mjs';
 
 export const info = (req, res) => {
+        server_datas.admin_visits += 1;
         const status = {
         author: "Muthugopi J",
         available_routes : "/login, /register",

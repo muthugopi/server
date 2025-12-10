@@ -26,6 +26,7 @@ export const register = async (req, res) => {
         }
         req.session.isLogined = true;
         server_datas.accounts += 1;
+        server_datas.requests += 1;
         return res.status(201).send({ success: true, msg: "Registered successfully!" });
     });
 }
