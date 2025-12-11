@@ -47,7 +47,7 @@ export const isAdmin = (req, res, next) => {
     
     db.query(query, [name], (err, result) => {
         if (err) {
-            return serverError(res); 
+            return serverError(res, err); 
         } 
         if (result.length === 0) {
             return notFound(res, "You're not an admin buddy!!");

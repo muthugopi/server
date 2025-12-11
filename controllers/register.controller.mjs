@@ -3,7 +3,6 @@ import bcrypt from 'bcrypt';
 
 import db from "../src/utils/db.mjs";
 import { serverError, customError } from "../src/utils/errorHandling.mjs";
-import { server_datas } from "./data.controller.mjs";
 const regQuery = 'INSERT INTO users (name, password, phone) VALUES (?, ?, ?)';
 const logQuery = 'SELECT * FROM users WHERE (name, password) = (?, ?)';
 
@@ -25,8 +24,6 @@ export const register = async (req, res) => {
             return serverError(res, err);
         }
         req.session.isLogined = true;
-        server_datas.accounts += 1;
-        server_datas.requests += 1;
         return res.status(201).send({ success: true, msg: "Registered successfully!" });
     });
 }
