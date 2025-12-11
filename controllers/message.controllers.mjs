@@ -29,8 +29,8 @@ export const showMessages = (req, res) => {
         if(err) {
             serverError(res); 
         }
-        else [
-            res.status(200).send(data)
-        ]
+        else {
+            res.status(200).send(data);
+    }
     })
 }

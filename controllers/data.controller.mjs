@@ -3,7 +3,8 @@ export let server_datas = {
     admin_visits : 0,
     accounts : 0,
     logined : 0,
-    requests : 0
+    requests : 0,
+    messages : 0
 }
 
 export const showData = (req, res) => {

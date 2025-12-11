@@ -7,6 +7,6 @@ import { isAdmin } from '../controllers/auth.controller.mjs';
 const router = express.Router();
 
 router.get('/', isAdmin, getAllUsers);
-router.post('/', checkSchema(createUserValidationSchema) ,createUser);
+router.post('/',isAdmin, checkSchema(createUserValidationSchema) ,createUser);
 
 export default router

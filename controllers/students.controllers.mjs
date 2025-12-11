@@ -1,13 +1,11 @@
 import db from "../src/utils/db.mjs";
 import { notFound, customError, serverError } from "../src/utils/errorHandling.mjs";
 import { validationResult, matchedData } from "express-validator";
-import { server_datas } from "./data.controller.mjs";
 
 
 
 export const getAllStudents = (req, res) => {
     req.session.visited = true;
-    server_datas.requests += 1;
     const query = "SELECT * FROM students";
 
     db.query(query, (err, result) => {
@@ -40,7 +38,6 @@ export const createStudent = (req, res) => {
 
 export const modifyStudent = (req, res) => {
     const { name, marks } = req.body;
-    server_datas.requests += 1;
     const query = "UPDATE students SET marks = ? WHERE name = ?"
 
     db.query(query, [marks, name], (err, data) => {
@@ -58,7 +55,6 @@ export const deleteStudent = (req, res) => {
     const { name } = req.body;
 
     const query = "DELETE FROM students WHERE name = ?";
-    server_datas.requests += 1;
     db.query(query, [name], (err, result) => {
         if (err) {
             return notFound(res, "User Not Found");

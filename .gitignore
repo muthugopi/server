@@ -1,15 +1,22 @@
-# logs
-combined.log
-error.log
-src/*.log
+# Node dependencies
+node_modules/
 
-# environment
+# Environment variables
 .env
 
-# IDE folders
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Build output
+dist/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / editor folders
+.vscode/
 .idea/
-
-# optional: ignore logger file
-src/utils/logger.mjs
-
-node_modules
