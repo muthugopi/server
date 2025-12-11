@@ -2,7 +2,6 @@
 import db from "../src/utils/db.mjs";
 import { serverError, customError } from "../src/utils/errorHandling.mjs";
 import { validationResult, matchedData } from "express-validator";
-import { server_datas } from "./data.controller.mjs";
 
 export const getMessage = (req, res) => {
     const result = validationResult(req);
@@ -18,8 +17,6 @@ export const getMessage = (req, res) => {
             return serverError(res);
         }
         else {
-            server_datas.messages += 1;
-            server_datas.requests += 1;
             return res.status(201).send({msg:"success"});
         }
     })
@@ -33,7 +30,6 @@ export const showMessages = (req, res) => {
             serverError(res); 
         }
         else {
-            server_datas.admin_visits += 1;
             res.status(200).send(data);
     }
     })
