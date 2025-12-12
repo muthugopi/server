@@ -1,7 +1,6 @@
 import db from "../src/utils/db.mjs";
 import { customError, serverError, notFound } from "../src/utils/errorHandling.mjs";
 import bcrypt from 'bcrypt';
-//import { Strategy as LocalStrategy } from "passport-local";
 
 //check if the user is valid or not !
 
@@ -56,5 +55,6 @@ export const isAdmin = (req, res, next) => {
         next();
     });
 }
+
 
 
