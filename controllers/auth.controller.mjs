@@ -42,6 +42,11 @@ export const isLogined = (req, res, next) => {
 
 
 export const isAdmin = (req, res, next) => {
+
+    if(req.session.role === "admin") {
+        console.log("access granted via session !!")
+        return next();
+    }
     const { name } = req.body;
     const query = 'SELECT * FROM admins WHERE name = ?';
     
@@ -52,6 +57,7 @@ export const isAdmin = (req, res, next) => {
         if (result.length === 0) {
             return notFound(res, "You're not an admin buddy!!");
         }
+        req.session.role = 'admin';
         console.log("access garented")
         next();
     });
