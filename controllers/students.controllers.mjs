@@ -11,6 +11,8 @@ export const getAllStudents = (req, res) => {
     db.query(query, (err, result) => {
         if (err) {
             return serverError(res, "Internel Server Error");
+        } else if (result.length === 0) {
+            res.status(404).send("No Students Data Available !! :(");
         }
         else {
             res.status(200).send({ data: result });
@@ -22,6 +24,12 @@ export const getAllStudents = (req, res) => {
 export const createStudent = (req, res) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
+        console.log("required Paths : ");
+        const error = result.array().map(data => {
+            return data.path;
+        });
+        console.log(error);
+
         return customError(res, 422, "Bad Request ! ");
     }
     const { name, age, marks, roles } = matchedData(req);
@@ -31,14 +39,14 @@ export const createStudent = (req, res) => {
             return serverError(res);
         }
         else {
-           return res.status(201).send("data inserted sucessfull");
+            return res.status(201).send("data inserted sucessfull");
         }
     })
 }
 
 export const modifyStudent = (req, res) => {
     const { name, marks } = req.body;
-    const query = "UPDATE students SET marks = ? WHERE name = ?"
+    const query = "UPDATE students SET marks = ? WHERE name = ?";
 
     db.query(query, [marks, name], (err, data) => {
 

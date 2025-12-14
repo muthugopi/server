@@ -1,6 +1,7 @@
 import db from "../src/utils/db.mjs";
 import { customError, serverError, notFound } from "../src/utils/errorHandling.mjs";
 import bcrypt from 'bcrypt';
+//import { Strategy as LocalStrategy } from "passport-local";
 
 //check if the user is valid or not !
 
@@ -41,6 +42,11 @@ export const isLogined = (req, res, next) => {
 
 
 export const isAdmin = (req, res, next) => {
+
+    if(req.session.role === "admin") {
+        console.log("access granted via session !!")
+        return next();
+    }
     const { name } = req.body;
     const query = 'SELECT * FROM admins WHERE name = ?';
     
@@ -51,10 +57,10 @@ export const isAdmin = (req, res, next) => {
         if (result.length === 0) {
             return notFound(res, "You're not an admin buddy!!");
         }
+        req.session.role = 'admin';
         console.log("access garented")
         next();
     });
 }
-
 
 

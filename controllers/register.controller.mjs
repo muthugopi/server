@@ -12,7 +12,7 @@ export const register = async (req, res) => {
         return customError(res, 400, "Mismatched Schema !");
     }
 
-    const { name, password, phone } = matchedData(req);
+    const { name, password, phone, role } = matchedData(req);
     const saltsRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltsRounds);
 
@@ -24,6 +24,12 @@ export const register = async (req, res) => {
             return serverError(res, err);
         }
         req.session.isLogined = true;
+        if(role === 'student') {
+            res.session.role = 'student';
+        }
+        else {
+            res.session.role = 'user';
+        }
         return res.status(201).send({ success: true, msg: "Registered successfully!" });
     });
 }

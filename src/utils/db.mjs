@@ -1,6 +1,8 @@
 import mysql from 'mysql2';
 import dotenv from 'dotenv';
 import logger from './logger.mjs';
+import { Sequelize } from 'sequelize';
+import Student from '../../models/student.model.mjs';
 
 dotenv.config(); // Load .env variables
 
@@ -24,3 +26,28 @@ db.getConnection((err, connection) => {
 });
 
 export default db;
+
+// alter method for connectting DB 
+
+
+export const sequelize = new Sequelize(
+  process.env.DB_NAME,      
+  process.env.DB_USER,      
+  process.env.DB_PASSWORD,   
+  {
+    host: process.env.DB_HOST, 
+    port: process.env.DB_PORT, 
+    dialect: "mysql",
+    logging: false
+  }
+);
+
+try {
+  await sequelize.authenticate();
+  console.log("Sequelize DB connected");
+  await sequelize.sync({alter:true});
+  console.log("Table Synced !!");
+} catch (err) {
+  console.error("Connection failed", err);
+}
+
