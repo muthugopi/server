@@ -2,30 +2,29 @@ import mysql from 'mysql2';
 import dotenv from 'dotenv';
 import logger from './logger.mjs';
 import { Sequelize } from 'sequelize';
-import Student from '../../models/student.model.mjs';
 
 dotenv.config(); // Load .env variables
 
 // Create MySQL pool
-export const db = mysql.createPool({
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-});
+// export const db = mysql.createPool({
+//     host: process.env.DB_HOST,
+//     port: process.env.DB_PORT,
+//     user: process.env.DB_USER,
+//     password: process.env.DB_PASSWORD,
+//     database: process.env.DB_NAME,
+// });
 
-db.getConnection((err, connection) => {
-    if (err) {
-        logger.error("Error inside the DB ")
-        console.error("Database connection failed:", err);
-    } else {
-        logger.info("Server Connected Successfully !");
-        connection.release();
-    }
-});
+// db.getConnection((err, connection) => {
+//     if (err) {
+//         logger.error("Error inside the DB ")
+//         console.error("DatabasA connection failed:", err);
+//     } else {
+//         logger.info("Server Connected Successfully !");
+//         connection.release();
+//     }
+// });
 
-export default db;
+// export default db;
 
 // alter method for connectting DB 
 
@@ -42,12 +41,5 @@ export const sequelize = new Sequelize(
   }
 );
 
-try {
-  await sequelize.authenticate();
-  console.log("Sequelize DB connected");
-  await sequelize.sync({alter:true});
-  console.log("Table Synced !!");
-} catch (err) {
-  console.error("Connection failed", err);
-}
+export default sequelize;
 
