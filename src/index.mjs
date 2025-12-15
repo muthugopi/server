@@ -1,13 +1,16 @@
 import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
+import helmet from 'helmet';
 import studentsRouter from '../routes/students.routes.mjs';
 import userRouter from '../routes/users.routes.mjs';
 import contactRouter from '../routes/contact.routes.mjs';
 import registerRouter from '../routes/register.router.mjs';
 import loginRouter from '../routes/login.routes.mjs';
 import session from 'express-session';
-import home from '../routes/home.routes.mjs'
+import home from '../routes/home.routes.mjs';
+import '../models/student.model.mjs';
+import { sequelize } from './utils/db.mjs';
 //import { isAdmin } from '../controllers/auth.controller.mjs';
 //import { showData } from '../controllers/data.controller.mjs';
 //import { Strategy as LocalStrategy } from 'passport-local';
@@ -18,18 +21,21 @@ import home from '../routes/home.routes.mjs'
 
 const app = express();
 
-app.use(express.json()); 
+app.use(express.json());
 app.use(morgan('dev'));
 app.use(cors());
+app.use(helmet());
 
 app.use(session({
-    secret:"muthugopi",
-    saveUninitialized:false,
-    resave:false,
-    cookie : {
-        maxAge : 60000*60
-    }
+  secret: "mcuhtahnudgroapvia",
+  saveUninitialized: false,
+  resave: false,
+  cookie: {
+    maxAge: 60000 * 60
+  }
 }));
+
+
 
 //app.use(cookieParser("muthugopi"));
 //app.use(myCookie);
@@ -40,4 +46,27 @@ app.use('/students', studentsRouter);
 app.use('/users', userRouter);
 app.use('/contact', contactRouter);
 
-app.listen(3000, () => console.log('Server running on port 3000'));
+// app.get("/session", (req, res) => {
+//   req.session.data = {
+//     id:1,
+//     role:"admin"
+//   }
+//   console.log(req.session);  // logs session object in terminal
+//   res.json(req.session, res.cookie);     // sends session data as JSON to browser
+// });
+
+  
+(async () => {
+  try {
+
+    await sequelize.authenticate();
+    console.log("DB connected successfully !!");
+
+    await sequelize.sync({ alter: true });
+    console.log("table synced");
+
+    app.listen(3000, () => console.log('Server running on port 3000'));
+  } catch (err) {
+    console.log(`error while connecting : ${err}`);
+  }
+})
