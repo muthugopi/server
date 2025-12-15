@@ -1,6 +1,6 @@
-import mysql from 'mysql2';
+// import mysql from 'mysql2';
 import dotenv from 'dotenv';
-import logger from './logger.mjs';
+// import logger from './logger.mjs';
 import { Sequelize } from 'sequelize';
 
 dotenv.config(); // Load .env variables

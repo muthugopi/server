@@ -55,9 +55,13 @@ app.use('/contact', contactRouter);
 //   res.json(req.session, res.cookie);     // sends session data as JSON to browser
 // });
 
-
+  
 (async () => {
   try {
+
+    await sequelize.authenticate();
+    console.log("DB connected successfully !!");
+
     await sequelize.sync({ alter: true });
     console.log("table synced");
 
