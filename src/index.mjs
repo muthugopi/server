@@ -55,18 +55,17 @@ app.use('/contact', contactRouter);
 //   res.json(req.session, res.cookie);     // sends session data as JSON to browser
 // });
 
-  
+
 (async () => {
   try {
-
     await sequelize.authenticate();
-    console.log("DB connected successfully !!");
+    console.log("DB connected successfully!");
 
     await sequelize.sync({ alter: true });
-    console.log("table synced");
+    console.log("Tables synced");
 
-    app.listen(3000, () => console.log('Server running on port 3000'));
+    app.listen(3000, () => console.log("Server running on port 3000"));
   } catch (err) {
-    console.log(`error while connecting : ${err}`);
+    console.error("DB connection failed:", err);
   }
-})
+})();

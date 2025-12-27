@@ -28,7 +28,7 @@ export const createStudentValidationSchema = {
     }
   },
 
-  roles: {
+  role: {
     notEmpty: {
       errorMessage: "Roles is required"
     },
