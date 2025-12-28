@@ -1,3 +1,4 @@
+import Admin from "../models/admin.model.mjs";
 import db from "../src/utils/db.mjs";
 import { customError, serverError, notFound } from "../src/utils/errorHandling.mjs";
 import bcrypt from 'bcrypt';
@@ -26,41 +27,41 @@ export const checkUser = (req, res, next) => {
             return customError(res, 400, "Password does not match");
         }
 
-        req.userData = {id:user.id,name:user.name}
+        req.userData = { id: user.id, name: user.name }
         next();
     });
 };
 export const isLogined = (req, res, next) => {
-    if(req.session.isLogined) {
+    if (req.session.isLogined) {
         return res.status(200).send({
-            success:true,
-            message:"login done via the session buddy !!"
+            success: true,
+            message: "login done via the session buddy !!"
         });
     }
     next();
 }
 
 
-export const isAdmin = (req, res, next) => {
+export const isAdmin = async (req, res, next) => {
 
-    if(req.session.role === "admin") {
-        console.log("access granted via session !!")
-        return next();
-    }
-    const { name } = req.body;
-    const query = 'SELECT * FROM admins WHERE name = ?';
-    
-    db.query(query, [name], (err, result) => {
-        if (err) {
-            return serverError(res, err); 
-        } 
-        if (result.length === 0) {
-            return notFound(res, "You're not an admin buddy!!");
-        }
-        req.session.role = 'admin';
-        console.log("access garented")
+    if (req.session.isadmin === true) {
+        console.log("Access Granted Via Session Buddy !");
         next();
-    });
+    } else {
+
+        const { name } = req.body;
+        if (!name)
+            return customError(res, 400, { Msg: "Provide Admin Name !" })
+        const admin = await Admin.findOne({
+            where: { name },
+        })
+        if (!admin) {
+            return notFound(res, { msg: "Access Denied" })
+        }
+        req.session.isadmin = true;
+        console.log("Access Granted")
+        next();
+    }
 }
 
 

@@ -6,7 +6,7 @@ import { isAdmin } from '../controllers/auth.controller.mjs';
 
 const router = express.Router();
 
-router.get('/', /*isAdmin,*/getAllStudents);   
+router.get('/', isAdmin, getAllStudents);   
 router.post('/', checkSchema(createStudentValidationSchema), createStudent);
 router.put('/:id', checkSchema(createStudentValidationSchema), updateStuent)   ;
 router.patch('/:id', modifyStudent);
