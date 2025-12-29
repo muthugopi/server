@@ -2,25 +2,29 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import bcrypt from "bcrypt";
 import db from "./db.mjs";
+import User from "../../models/user.model.mjs";
 
 passport.use(
-  new LocalStrategy({usernameField : "name"}, (name, password, done) => {
-    db.query("SELECT * FROM users WHERE name = ?", [name], async (err, data) => {
-      if (err) return done(err);
+  new LocalStrategy({usernameField : "name"}, async (name, password, done) => {
+    try{
 
-      if (data.length === 0) {
-        return done(null, false, { message: "User not found" });
+      const userLogin = await User.findOne({
+        where : {name}
+      });
+      if(!userLogin) {
+        return done(null, false, {msg : " Invalid Username"});
       }
 
-      const user = data[0];
-      const isMatch = await bcrypt.compare(password, user.password);
-
-      if (!isMatch) {
-        return done(null, false, { message: "Invalid password" });
+      const comparePassword = await bcrypt.compare(password, userLogin.password);
+      if(!comparePassword) {
+        return done(null, false, {msg : "Invalid Password"});
       }
-
-      return done(null, user);
-    });
+      done(null, userLogin);
+    }
+    catch(err) {
+      console.log("error inside passport.mjs");
+      return done(err);
+    }
   })
 );
 
@@ -28,12 +32,15 @@ passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-passport.deserializeUser((id, done) => {
-  const query = "SELECT * FROM users WHERE id = ?";
-  db.query(query, [id], (err, data) => {
-    if (err) return done(err);
-    done(null, data[0]);
-  });
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findByPk(id);
+    if (!user) return done(null, false);
+    done(null, user);
+  } catch (err) {
+    done(err);
+  }
 });
+
 
 export default passport

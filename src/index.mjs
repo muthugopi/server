@@ -11,6 +11,7 @@ import session from 'express-session';
 import home from '../routes/home.routes.mjs';
 import '../models/student.model.mjs';
 import { sequelize } from './utils/db.mjs';
+import Message from '../models/message.model.mjs';
 //import { isAdmin } from '../controllers/auth.controller.mjs';
 //import { showData } from '../controllers/data.controller.mjs';
 //import { Strategy as LocalStrategy } from 'passport-local';
@@ -61,7 +62,7 @@ app.use('/contact', contactRouter);
     await sequelize.authenticate();
     console.log("DB connected successfully!");
 
-    await sequelize.sync({ alter: true });
+    await sequelize.sync();
     console.log("Tables synced");
 
     app.listen(3000, () => console.log("Server running on port 3000"));
