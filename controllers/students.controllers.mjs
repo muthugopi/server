@@ -4,42 +4,23 @@ import { validationResult, matchedData } from "express-validator";
 import { DataTypes } from "sequelize";
 import sequelize from "../src/utils/db.mjs";
 import Student from "../models/student.model.mjs";
-import { q } from "framer-motion/client";
 
-
-// export const getAllStudents = (req, res) => {
-//     req.session.visited = true;
-//     const query = "SELECT * FROM students";
-
-//     db.query(query, (err, result) => {
-//         if (err) {
-//             return serverError(res, "Internel Server Error");
-//         } else if (result.length === 0) {
-//             res.status(404).send("No Students Data Available !! :(");
-//         }
-//         else {
-//             res.status(200).send({ data: result });
-//         }
-//     })
-
-// }
 
 export const getAllStudents = async (req, res) => {
     try {
-        req.session.visited = true;
+        //req.session.visited = true;
         const students = await Student.findAll();
 
         //for no data
-        if (!students || students.length == 0)
-            return customError(res, 404, { msg: "No Data Founded" });
-
+        if (!students || students.length == 0) {
+            return notFound(res);
+        }
         //success response !
-        return res.status(200).send({ data: students });
+        return res.status(200).send({data : students});
     }
 
     catch (err) {
-        serverError(res, { Error: "An Error Occured!, check the console !" });
-        console.log(`Error : ${err.message}`);
+        console.log(`Error : ${err} ${res.headersSent}`);
     }
 }
 

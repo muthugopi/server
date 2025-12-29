@@ -1,37 +1,38 @@
 import { matchedData, validationResult } from "express-validator";
 import bcrypt from 'bcrypt';
-
-import db from "../src/utils/db.mjs";
 import { serverError, customError } from "../src/utils/errorHandling.mjs";
-const regQuery = 'INSERT INTO users (name, password, phone) VALUES (?, ?, ?)';
-const logQuery = 'SELECT * FROM users WHERE (name, password) = (?, ?)';
+import User from "../models/user.model.mjs";
+
 
 export const register = async (req, res) => {
-    const result = validationResult(req);
-    if (!result.isEmpty()) {
-        return customError(res, 400, "Mismatched Schema !");
+    try {
+        const result = validationResult(req);
+        if (!result.isEmpty()) {
+            return customError(res, 400, "Mismatched Schema !");
+        }
+
+        const { name, password, phone } = matchedData(req);
+        const saltsRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltsRounds);
+
+        const newUser = await User.create({
+            name: name,
+            password: hashedPassword,
+            phone: phone
+        });
+        req.session.isLogined = true;
+        req.session.user = {
+            id: newUser.id,
+            name: newUser.name
+        };
+
+        return res.status(201).send({ msg: "registration completed !!" });
+    }
+    catch (err) {
+        console.log("error inside the register API endpoint !");
+        return serverError(res);
     }
 
-    const { name, password, phone, role } = matchedData(req);
-    const saltsRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltsRounds);
-
-    db.query(regQuery, [name, hashedPassword, phone], (err) => {
-        if (err) {
-            if (err.code === "ER_DUP_ENTRY") {
-                return customError(res, 409, "Duplicate entry (phone or name)");
-            }
-            return serverError(res, err);
-        }
-        req.session.isLogined = true;
-        if(role === 'student') {
-            res.session.role = 'student';
-        }
-        else {
-            res.session.role = 'user';
-        }
-        return res.status(201).send({ success: true, msg: "Registered successfully!" });
-    });
 }
 
 
