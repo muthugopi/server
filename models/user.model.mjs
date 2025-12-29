@@ -1,7 +1,5 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../src/utils/db.mjs";
-import { Phone } from "lucide-react";
-import passport from "passport";
 
 const User = sequelize.define(
   "User",
