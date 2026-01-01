@@ -12,13 +12,6 @@ import home from '../routes/home.routes.mjs';
 import '../models/student.model.mjs';
 import { sequelize } from './utils/db.mjs';
 import Message from '../models/message.model.mjs';
-//import { isAdmin } from '../controllers/auth.controller.mjs';
-//import { showData } from '../controllers/data.controller.mjs';
-//import { Strategy as LocalStrategy } from 'passport-local';
-//import passport from 'passport';
-//import { cookie } from 'express-validator';
-//import { myCookie } from './cookie.learn.mjs';
-//import cookieParser from 'cookie-parser';
 
 const app = express();
 
@@ -36,6 +29,10 @@ app.use(session({
   }
 }));
 
+app.use((req, res, next) => {
+  console.log(req.headers);
+  next();
+});
 
 
 //app.use(cookieParser("muthugopi"));

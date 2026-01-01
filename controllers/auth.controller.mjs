@@ -1,6 +1,5 @@
 import User from "../models/user.model.mjs";
 import Admin from "../models/admin.model.mjs";
-import db from "../src/utils/db.mjs";
 import { customError, serverError, notFound } from "../src/utils/errorHandling.mjs";
 import bcrypt from 'bcrypt';
 //import { Strategy as LocalStrategy } from "passport-local";

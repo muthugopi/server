@@ -1,8 +1,5 @@
-import db from "../src/utils/db.mjs";
 import { notFound, customError, serverError } from "../src/utils/errorHandling.mjs";
 import { validationResult, matchedData } from "express-validator";
-import { DataTypes } from "sequelize";
-import sequelize from "../src/utils/db.mjs";
 import Student from "../models/student.model.mjs";
 
 
