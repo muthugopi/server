@@ -10,8 +10,10 @@ import loginRouter from '../routes/login.routes.mjs';
 import session from 'express-session';
 import home from '../routes/home.routes.mjs';
 import '../models/student.model.mjs';
+import '../models/admin.model.mjs'
+import '../models/user.model.mjs'
+import '../models/message.model.mjs'
 import { sequelize } from './utils/db.mjs';
-import Message from '../models/message.model.mjs';
 
 const app = express();
 

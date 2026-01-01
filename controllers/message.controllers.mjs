@@ -1,12 +1,12 @@
 import Message from "../models/message.model.mjs";
-import { serverError, customError, notFound } from "../src/utils/errorHandling.mjs";
+import { serverError, notFound, fail } from "../src/utils/errorHandling.mjs";
 import { validationResult, matchedData } from "express-validator";
 
 export const getMessage = (req, res) => {
     try {
         const result = validationResult(req);
         if (!result.isEmpty()) {
-            customError(result, 400, 'Bad Request');
+            fail(res, 400, 'Bad Request ');
         }
 
         const { name, mail, message } = matchedData(req);
@@ -17,7 +17,7 @@ export const getMessage = (req, res) => {
             message: message
         })
 
-        return res.status(201).send({msg : " We Recieved Your Message !"});
+        return ok(res, 200, {msg : " We Recieved Your Message !"});
     }
     catch (err) {
         console.log("Error inside getMessage : folder - /controllers");
@@ -31,7 +31,7 @@ export const showMessages = async (req, res) => {
         if (!messageData || messageData.length === 0) {
             return notFound(res, "No Data Found On The Database. Good Things Takes Tiem Bruhh. just wait !!");
         }
-        return res.status(200).send({ MessageDatas: messageData });
+        return ok(res, 200, { MessageDatas: messageData });
     } catch (err) {
         console.log(`Error : ${err.message}`)
     }

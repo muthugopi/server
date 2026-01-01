@@ -1,4 +1,4 @@
-import { notFound, customError, serverError } from "../src/utils/errorHandling.mjs";
+import { notFound, fail, serverError, ok } from "../src/utils/errorHandling.mjs";
 import { validationResult, matchedData } from "express-validator";
 import Student from "../models/student.model.mjs";
 
@@ -13,7 +13,7 @@ export const getAllStudents = async (req, res) => {
             return notFound(res);
         }
         //success response !
-        return res.status(200).send({data : students});
+        return ok(res, 200, {data : students});
     }
 
     catch (err) {
@@ -26,7 +26,7 @@ export const createStudent = async (req, res) => {
     try {
         const error = validationResult(req);
         if(!error.isEmpty()) 
-            return customError(res, 400, {msg:"Check The Schema !"});
+            return fail(res, 400,"check the schema");
 
         const data = matchedData(req)
 
@@ -61,7 +61,7 @@ export const updateStuent = async (req, res) => {
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return customError(res, 400, errors.array());
+        return fail(res, 400, errors.array());
     }
 
     const data = matchedData(req);
@@ -71,7 +71,7 @@ export const updateStuent = async (req, res) => {
     student.role = data.role;
     await student.save();
 
-    return res.status(200).send({ updated: true });
+    return ok(res, 200, {data});
 }
 
 export const modifyStudent = async (req, res) => {
@@ -81,7 +81,7 @@ export const modifyStudent = async (req, res) => {
         const student = await Student.findByPk(id);
 
         if (marks === undefined || isNaN(Number(marks))) {
-            return customError(res, 400, "Marks must be a number");
+            return fail(res, 400, "Marks must be a number");
         }
 
         if (!student) {
@@ -89,7 +89,7 @@ export const modifyStudent = async (req, res) => {
         }
         student.marks = marks;
         await student.save();
-        return res.status(200).send({ modified: true });
+        return ok(res, 200, {modified : true})
     } catch (err) {
         serverError(res, 400, { msg: "check console" });
         console.log(`Error : ${err.message}`);
@@ -108,7 +108,7 @@ export const deleteStudent = async (req, res) => {
         }
         await student.destroy();
 
-        return res.status(200).send({ deleted: true });
+        return ok(res, 200, {deleted : true});
     }
     catch (err) {
         serverError(res, 400, { msg: "check console" });

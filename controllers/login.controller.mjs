@@ -13,7 +13,7 @@ export const login = (req, res) => {
     req.session.isLogined = true;
     req.session.token = token;
 
-    return res.status(200).send({
+    return ok(res, 200, {
         success: true,
         msg: "Access Granted. Logged in!"
     });

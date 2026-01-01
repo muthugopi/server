@@ -1,6 +1,6 @@
 import User from "../models/user.model.mjs";
 import Admin from "../models/admin.model.mjs";
-import { customError, serverError, notFound } from "../src/utils/errorHandling.mjs";
+import { serverError, notFound } from "../src/utils/errorHandling.mjs";
 import bcrypt from 'bcrypt';
 //import { Strategy as LocalStrategy } from "passport-local";
 
@@ -24,7 +24,7 @@ export const checkUser = async (req, res, next) => {
     );
 
     if (!isPasswordValid) {
-      return customError(res, 400, "Invalid password");
+      return fail(res, 400, "Invalid password");
     }
     req.user = validUser;
 
@@ -39,7 +39,7 @@ export const isLogined = (req, res, next) => {
     if (req.session.isLogined) {
         next();
     }
-    customError(res, 400, "Login Required");
+    fail(res, 400, "Login Required");
 }
 
 
@@ -52,7 +52,7 @@ export const isAdmin = async (req, res, next) => {
 
         const { name } = req.body;
         if (!name)
-            return customError(res, 400, { Msg: "Provide Admin Name !" })
+            return fail(res, 400, { Msg: "Provide Admin Name !" })
         const admin = await Admin.findOne({
             where: { name },
         })

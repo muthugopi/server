@@ -1,3 +1,3 @@
 export const info = (req, res) => {
-    res.status(200).send("Welcome to the Root !!!   :)")
+   ok(res, 200, "Welcome to the root");
 }
