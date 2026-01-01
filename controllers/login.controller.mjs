@@ -6,7 +6,7 @@ export const login = (req, res) => {
 
     const token = jwt.sign(
         { id, name },
-        "secret",
+        process.env.JWT_SECRET_KEY,
         { expiresIn: "1d" }
     );
    

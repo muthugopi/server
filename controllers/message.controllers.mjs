@@ -1,5 +1,3 @@
-
-import db from "../src/utils/db.mjs";
 import Message from "../models/message.model.mjs";
 import { serverError, customError, notFound } from "../src/utils/errorHandling.mjs";
 import { validationResult, matchedData } from "express-validator";
