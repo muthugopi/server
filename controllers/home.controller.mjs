@@ -1,3 +1,3 @@
 export const info = (req, res) => {
-   ok(res, 200, "Welcome to the root");
+   ok(res, "Welcome to the root");
 }

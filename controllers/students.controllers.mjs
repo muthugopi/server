@@ -13,7 +13,7 @@ export const getAllStudents = async (req, res) => {
             return notFound(res);
         }
         //success response !
-        return ok(res, 200, {data : students});
+        return ok(res,students);
     }
 
     catch (err) {
@@ -26,7 +26,7 @@ export const createStudent = async (req, res) => {
     try {
         const error = validationResult(req);
         if(!error.isEmpty()) 
-            return fail(res, 400,"check the schema");
+            return fail(res, "check the schema");
 
         const data = matchedData(req)
 
@@ -61,7 +61,7 @@ export const updateStuent = async (req, res) => {
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return fail(res, 400, errors.array());
+        return fail(res, errors.array());
     }
 
     const data = matchedData(req);
@@ -71,7 +71,7 @@ export const updateStuent = async (req, res) => {
     student.role = data.role;
     await student.save();
 
-    return ok(res, 200, {data});
+    return ok(res,{data});
 }
 
 export const modifyStudent = async (req, res) => {
@@ -81,7 +81,7 @@ export const modifyStudent = async (req, res) => {
         const student = await Student.findByPk(id);
 
         if (marks === undefined || isNaN(Number(marks))) {
-            return fail(res, 400, "Marks must be a number");
+            return fail(res, "Marks must be a number");
         }
 
         if (!student) {
@@ -89,9 +89,9 @@ export const modifyStudent = async (req, res) => {
         }
         student.marks = marks;
         await student.save();
-        return ok(res, 200, {modified : true})
+        return ok(res, {modified : true})
     } catch (err) {
-        serverError(res, 400, { msg: "check console" });
+        serverError(res, { msg: "check console" });
         console.log(`Error : ${err.message}`);
     }
 }
@@ -108,10 +108,10 @@ export const deleteStudent = async (req, res) => {
         }
         await student.destroy();
 
-        return ok(res, 200, {deleted : true});
+        return ok(res, {deleted : true});
     }
     catch (err) {
-        serverError(res, 400, { msg: "check console" });
+        serverError(res, { msg: "check console" });
         console.log(`Error : ${err.message}`);
     }
 }

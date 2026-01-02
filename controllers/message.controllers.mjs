@@ -6,7 +6,7 @@ export const getMessage = (req, res) => {
     try {
         const result = validationResult(req);
         if (!result.isEmpty()) {
-            fail(res, 400, 'Bad Request ');
+            fail(res,'Bad Request ');
         }
 
         const { name, mail, message } = matchedData(req);
@@ -17,7 +17,7 @@ export const getMessage = (req, res) => {
             message: message
         })
 
-        return ok(res, 200, {msg : " We Recieved Your Message !"});
+        return ok(res, {msg : " We Recieved Your Message !"});
     }
     catch (err) {
         console.log("Error inside getMessage : folder - /controllers");
@@ -31,7 +31,7 @@ export const showMessages = async (req, res) => {
         if (!messageData || messageData.length === 0) {
             return notFound(res, "No Data Found On The Database. Good Things Takes Tiem Bruhh. just wait !!");
         }
-        return ok(res, 200, { MessageDatas: messageData });
+        return ok(res, { MessageDatas: messageData });
     } catch (err) {
         console.log(`Error : ${err.message}`)
     }

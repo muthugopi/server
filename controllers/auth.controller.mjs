@@ -24,7 +24,7 @@ export const checkUser = async (req, res, next) => {
     );
 
     if (!isPasswordValid) {
-      return fail(res, 400, "Invalid password");
+      return fail(res, "Invalid password");
     }
     req.user = validUser;
 
@@ -39,7 +39,7 @@ export const isLogined = (req, res, next) => {
     if (req.session.isLogined) {
         next();
     }
-    fail(res, 400, "Login Required");
+    fail(res,"Login Required");
 }
 
 
@@ -52,7 +52,7 @@ export const isAdmin = async (req, res, next) => {
 
         const { name } = req.body;
         if (!name)
-            return fail(res, 400, { Msg: "Provide Admin Name !" })
+            return fail(res,  { Msg: "Provide Admin Name !" })
         const admin = await Admin.findOne({
             where: { name },
         })

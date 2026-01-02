@@ -8,7 +8,7 @@ export const register = async (req, res) => {
     try {
         const result = validationResult(req);
         if (!result.isEmpty()) {
-            return customError(res, 400, "Mismatched Schema !");
+            return customError(res, "Mismatched Schema !");
         }
 
         const { name, password, phone } = matchedData(req);
@@ -26,7 +26,7 @@ export const register = async (req, res) => {
             name: newUser.name
         };
 
-        return ok(res, 200,{ msg: "registration completed !!" });
+        return ok(res, { msg: "registration completed !!" });
     }
     catch (err) {
         console.log("error inside the register API endpoint !");

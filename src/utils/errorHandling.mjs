@@ -7,7 +7,7 @@ export function send(
 ) {
   return res.status(statusCode).json({
     success,
-    message,
+    message : sanitize(message),
     data,
   });
 }
@@ -28,3 +28,9 @@ export const notFound = (res, message = "Not Found") =>
 
 export const serverError = (res, message = "Internal Server Error") =>
   fail(res, 500, message);
+
+
+function sanitize(message) {
+  if (typeof message !== "string") return "";
+  return message.replace(/[<>]/g, "");
+}

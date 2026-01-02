@@ -1,21 +1,25 @@
+//import modules here
+
 import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import helmet from 'helmet';
+import session from 'express-session';
 import studentsRouter from '../routes/students.routes.mjs';
 import userRouter from '../routes/users.routes.mjs';
 import contactRouter from '../routes/contact.routes.mjs';
 import registerRouter from '../routes/register.router.mjs';
 import loginRouter from '../routes/login.routes.mjs';
-import session from 'express-session';
 import home from '../routes/home.routes.mjs';
-import '../models/student.model.mjs';
-import '../models/admin.model.mjs'
-import '../models/user.model.mjs'
-import '../models/message.model.mjs'
 import { sequelize } from './utils/db.mjs';
+import '../models/student.model.mjs';
+import '../models/admin.model.mjs';
+import '../models/user.model.mjs';
+import '../models/message.model.mjs';
 
 const app = express();
+
+//middlewares here
 
 app.use(express.json());
 app.use(morgan('dev'));
@@ -23,7 +27,7 @@ app.use(cors());
 app.use(helmet());
 
 app.use(session({
-  secret: "mcuhtahnudgroapvia",
+  secret: process.env.SECRET,
   saveUninitialized: false,
   resave: false,
   cookie: {
@@ -36,9 +40,8 @@ app.use((req, res, next) => {
   next();
 });
 
+//routes here
 
-//app.use(cookieParser("muthugopi"));
-//app.use(myCookie);
 app.use('/', home);
 app.use('/register', registerRouter);
 app.use('/login', loginRouter);
@@ -46,15 +49,7 @@ app.use('/students', studentsRouter);
 app.use('/users', userRouter);
 app.use('/contact', contactRouter);
 
-// app.get("/session", (req, res) => {
-//   req.session.data = {
-//     id:1,
-//     role:"admin"
-//   }
-//   console.log(req.session);  // logs session object in terminal
-//   res.json(req.session, res.cookie);     // sends session data as JSON to browser
-// });
-
+//connections
 
 (async () => {
   try {
