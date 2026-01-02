@@ -3,6 +3,8 @@ import { serverError, notFound, fail } from "../src/utils/errorHandling.mjs";
 import { validationResult, matchedData } from "express-validator";
 
 export const getMessage = (req, res) => {
+    if(!req.session.role == 'user')
+        return fail(res, 400, "Only User Can Send Message To The Admins");
     try {
         const result = validationResult(req);
         if (!result.isEmpty()) {

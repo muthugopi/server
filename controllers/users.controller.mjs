@@ -35,7 +35,7 @@ export const createUser = async (req, res) => {
         name : name,
         phone : phone
     })
-
+    req.session.role = "user"
     return ok(res,{msg : "new User was created by the admin"})
     }
     catch(err) {

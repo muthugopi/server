@@ -36,7 +36,7 @@ export const createStudent = async (req, res) => {
             marks :data.marks,
             role : data.role,
         });
-
+        res.session.role = "student"
         res.status(201).json({
             message: "Student created successfully",
             data: student,

@@ -8,6 +8,8 @@ import bcrypt from 'bcrypt';
 
 export const checkUser = async (req, res, next) => {
   try {
+    if(req.session.role === 'user') 
+        next();
     const { name, password } = req.body;
 
     const validUser = await User.scope(null).findOne({
