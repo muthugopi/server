@@ -1,4 +1,4 @@
-import { notFound, fail, serverError, ok } from "../src/utils/errorHandling.mjs";
+import { notFound, fail, serverError } from "../src/utils/responseHandling.mjs";
 import { validationResult, matchedData } from "express-validator";
 import Student from "../models/student.model.mjs";
 
@@ -13,7 +13,7 @@ export const getAllStudents = async (req, res) => {
             return notFound(res);
         }
         //success response !
-        return ok(res,students);
+        return res.status(200).send(students);
     }
 
     catch (err) {
@@ -71,7 +71,7 @@ export const updateStuent = async (req, res) => {
     student.role = data.role;
     await student.save();
 
-    return ok(res,{data});
+    return res.status(200).send("Updated Successfull !");
 }
 
 export const modifyStudent = async (req, res) => {
@@ -89,7 +89,7 @@ export const modifyStudent = async (req, res) => {
         }
         student.marks = marks;
         await student.save();
-        return ok(res, {modified : true})
+        return res.status(200).send({modified : true});
     } catch (err) {
         serverError(res, { msg: "check console" });
         console.log(`Error : ${err.message}`);
@@ -108,7 +108,7 @@ export const deleteStudent = async (req, res) => {
         }
         await student.destroy();
 
-        return ok(res, {deleted : true});
+        return res.status(200).send({deleted : true});
     }
     catch (err) {
         serverError(res, { msg: "check console" });

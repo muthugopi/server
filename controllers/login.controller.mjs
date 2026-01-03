@@ -6,15 +6,15 @@ export const login = (req, res) => {
 
     const token = jwt.sign(
         { id, name },
-        process.env.JWT_SECRET_KEY,
+        process.env.SECRET,
         { expiresIn: "1d" }
     );
    
     req.session.isLogined = true;
     req.session.token = token;
 
-    return ok(res,{
-        success: true,
-        msg: "Access Granted. Logged in!"
+    return res.status(200).send({
+        success : true,
+        msg : "Access granted Successfully !"
     });
 };

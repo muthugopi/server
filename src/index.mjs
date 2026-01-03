@@ -7,7 +7,7 @@ import helmet from 'helmet';
 import session from 'express-session';
 import studentsRouter from '../routes/students.routes.mjs';
 import userRouter from '../routes/users.routes.mjs';
-import contactRouter from '../routes/contact.routes.mjs';
+import messageRouter from '../routes/message.routes.mjs';
 import registerRouter from '../routes/register.router.mjs';
 import loginRouter from '../routes/login.routes.mjs';
 import home from '../routes/home.routes.mjs';
@@ -47,7 +47,7 @@ app.use('/register', registerRouter);
 app.use('/login', loginRouter);
 app.use('/students', studentsRouter);
 app.use('/users', userRouter);
-app.use('/contact', contactRouter);
+app.use('/message', messageRouter);
 
 //connections
 
