@@ -1,20 +1,28 @@
+// controllers/login.controller.mjs
 import jwt from "jsonwebtoken";
 
 export const login = (req, res) => {
-    const { id, name } = req.user;
-    console.log("to check whether the git is work or not")
+  const user = req.user;
 
-    const token = jwt.sign(
-        { id, name },
-        process.env.JWT_SECRET_KEY,
-        { expiresIn: "1d" }
-    );
-   
-    req.session.isLogined = true;
-    req.session.token = token;
+  const payload = {
+    id: user._id,
+    name: user.name,
+    role: user.role
+  };
 
-    return ok(res,{
-        success: true,
-        msg: "Access Granted. Logged in!"
-    });
+  const token = jwt.sign(
+    payload,
+    process.env.SECRET,
+    { expiresIn: "1d" }
+  );
+
+  return res.status(200).json({
+    success: true,
+    message: "Login successful",
+    token,
+    user : {
+        name : user.name,
+        phone : user.phone
+    }
+  });
 };

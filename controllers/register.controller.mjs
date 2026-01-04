@@ -1,6 +1,6 @@
 import { matchedData, validationResult } from "express-validator";
 import bcrypt from 'bcrypt';
-import { serverError } from "../src/utils/errorHandling.mjs";
+import { serverError } from "../src/utils/responseHandling.mjs";
 import User from "../models/user.model.mjs";
 
 
@@ -26,7 +26,7 @@ export const register = async (req, res) => {
             name: newUser.name
         };
 
-        return ok(res, { msg: "registration completed !!" });
+        return res.send(200).send("registration completed !");
     }
     catch (err) {
         console.log("error inside the register API endpoint !");

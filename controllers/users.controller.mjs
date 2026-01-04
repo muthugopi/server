@@ -1,5 +1,5 @@
 import User from '../models/user.model.mjs';
-import { serverError, notFound, fail, ok } from '../src/utils/errorHandling.mjs';
+import { serverError, notFound, fail} from '../src/utils/responseHandling.mjs';
 import { validationResult, matchedData } from 'express-validator';
 
 export const getAllUsers = async (req, res) => {
@@ -15,9 +15,7 @@ const users = await User.findAll({attributes: { exclude: ["password"] }});
 
   } catch (error) {
     console.error(error);
-    return ok(res, {
-      message: "Internal server error"
-    });
+    return serverError(res);
   }
 };
 
@@ -36,7 +34,7 @@ export const createUser = async (req, res) => {
         phone : phone
     })
     req.session.role = "user"
-    return ok(res,{msg : "new User was created by the admin"})
+    return res.status(201).send("Created !");
     }
     catch(err) {
         console.log("error inside the  createUser !");
@@ -55,5 +53,5 @@ export const  deleteUser = async (req, res) => {
 
     await user.destroy();
 
-    return ok(res,  {msg : "User Deleted Succesfully !"});
+    return res.status(200).send("User Deleted Successfully !");
 }
